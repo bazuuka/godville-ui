@@ -153,5 +153,5 @@ $(function() {
 	improve();
 	// FIXME: this will repear all improve on all mouse movement
 	// may be use less expensive event (live? handle ajax request?)
-	$('body').hover( function() { improve(); } )
+	$('body').hover( function() { improve(); } );
 });

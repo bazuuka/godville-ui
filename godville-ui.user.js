@@ -4,7 +4,7 @@
 // @description    Some improvements for godville ui
 // @include        http://godville.net/hero*
 // @require        http://mesak-project.googlecode.com/files/jquery.142.gm.js
-// @license        GPL
+// @license        GNU General Public License v3
 // ==/UserScript==
 
 // ------------ HELPERS ---------------

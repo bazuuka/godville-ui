@@ -108,6 +108,20 @@ function improveSayDialog() {
 
 }
 
+// ----------- Вести с полей ----------------
+function improveFieldBox() {
+	if (isAlreadyImproved( $('#hero_details fieldset') )) return;
+
+	// Add links
+	var $box = $('#hero_details');
+
+	// Убегай
+	addAfterLabel($box, 'Противник', getGenSayButton('сдавайся', ['Убегай', 'Сдавайся']));
+
+	// Бей
+	addAfterLabel($box, 'Противник', getGenSayButton('бей', ['Бей со всей силы', 'Бей вне очереди', 'Бей два раза']));
+}
+
 // ---------- Stats --------------
 
 function improveStats() {
@@ -134,6 +148,7 @@ function improve() {
 	improveLoot();
 	improveSayDialog();
 	improveStats();
+	improveFieldBox();
 }
 
 // Main code

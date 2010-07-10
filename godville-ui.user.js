@@ -8,13 +8,26 @@
 // @license        GNU General Public License v3
 // ==/UserScript==
 
+// Style
 GM_addStyle(' .label-appended {float: left; margin-left: 1em;} ');
 
+//  --- All words from phrases.json ---
+
+// JSON.parse не поддерживает комментарии в JSON. Whyyyyy ???
+// пришлось использовать небезопасный eval.
+// TODO: JSON.minify? yaml? -- и для того и другого нужна еще одна библиотечка
+var words = eval('(' + GM_getResourceText('Words') + ')');
 
 // ------------ HELPERS ---------------
+// Чтение массива
 function get_random_item(arr) {
 	return arr[Math.floor ( Math.random() * arr.length )];
 }
+
+function get_random_phrase(sect) {
+	return get_random_item( words['phrases'][sect] );
+}
+
 
 function sayToHero(phrase) {
 	$('#aog_hint_label').hide();

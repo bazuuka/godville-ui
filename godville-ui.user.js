@@ -18,17 +18,20 @@ GM_addStyle(' .label-appended {float: left; margin-left: 1em;} ');
 // TODO: JSON.minify? yaml? -- и для того и другого нужна еще одна библиотечка
 var words = eval('(' + GM_getResourceText('Words') + ')');
 
-// ------------ HELPERS ---------------
+// ------------------------
+//      HELPERS
+// ------------------------
+
 // Чтение массива
 function get_random_item(arr) {
 	return arr[Math.floor ( Math.random() * arr.length )];
 }
-
+// Случайная фраза в разделе 'sect'
 function get_random_phrase(sect) {
 	return get_random_item( words['phrases'][sect] );
 }
 
-
+// Базовый алгоритм произнесения фразы
 function sayToHero(phrase) {
 	$('#aog_hint_label').hide();
 	$('#god_phrase').val(phrase);
@@ -60,20 +63,25 @@ function getGenSayButton(title, array) {
 		});
 }
 
+// Хелпер объединяет addAfterLabel и getGenSayButton
+// + берет фразы из words['phrases']
+function addSayPhraseAfterLabel($base_elem, label_name, btn_name, section) {
+	var arr = words['phrases'][section];
+	addAfterLabel($base_elem, label_name, getGenSayButton(btn_name, arr));
+}
+
+// ------------------------------------
+//  Improvements !!
+// ------------------------------------
+
 // -------- Hero Loot -----------------
 function getInspectQueryText(item_name) {
-	var verb = get_random_item(['исследуй', 'осмотри', 'рассмотри']);
-	return verb + ' "' + item_name + '"';
+	return get_random_phrase('inspect_prefix') + ' "' + item_name + '"';
 }
 
 function isHealItem(item_name) {
-	// Source: http://wiki.godville.net/index.php/Лечебные_трофеи
-	items = [ 'крем после битья', 'мензурку с раствором йода', 'набор юного хирурга',
-		  'пузырёк с надписью «Выпей меня»', 'пузырёк с надписью «Сьешь меня»',
-		  'пузырёк витамина С++', 'таблеточное месиво', 'трофейный стимпак',
-		  'флакон антисептика', 'флягу с лечащим пойлом', 'фляжку живой воды',
-		  'эссенцию здоровья', 'пузырёк витамина С++', 'канистру амброзии' ];
-	return items.indexOf(item_name) >= 0;
+	var items = words['items']['heal'];
+	return items.indexOf(items) >= 0;
 }
 
 // Main button creater
@@ -113,11 +121,8 @@ function improveSayDialog() {
 	// Add links
 	var $box = $('#hero_actsofgod');
 
-	// Жертва
-	addAfterLabel($box, 'Прана', getGenSayButton('жертва', ['Принеси мне жертву', 'Жертву мне жеертвуу!']));
-
-	// Молитва
-	addAfterLabel($box, 'Прана', getGenSayButton('ещё', ['Кто не молится, тот не ест','Молись, собака, смертный прыщ! На колени!']));
+	addSayPhraseAfterLabel($box, 'Прана', 'жертва', 'sacrifice');
+	addSayPhraseAfterLabel($box, 'Прана', 'ещё', 'pray');
 }
 
 // ----------- Вести с полей ----------------
@@ -127,11 +132,7 @@ function improveFieldBox() {
 	// Add links
 	var $box = $('#hero_details');
 
-	// Убегай
-	addAfterLabel($box, 'Противник', getGenSayButton('сдавайся', ['Убегай', 'Сдавайся']));
-
-	// Бей
-	addAfterLabel($box, 'Противник', getGenSayButton('бей', ['Бей со всей силы', 'Бей вне очереди', 'Бей два раза']));
+	addSayPhraseAfterLabel($box, 'Противник', 'бей', 'hit');
 }
 
 // ---------- Stats --------------
@@ -139,19 +140,16 @@ function improveFieldBox() {
 function improveStats() {
 	if (isAlreadyImproved( $('#hs_box') )) return;
 
+	// Add links
 	var $box = $('#hero_stats');
 
-	// Опыт, еще опыт, думай
-	addAfterLabel($box, 'Уровень', getGenSayButton('ещё', ['Набирайся опыта', 'Учись, набирайся опыта']));
-
-	// Кнопка лечения
-	addAfterLabel($box, 'Здоровье', getGenSayButton('ещё', ['Лечись', 'Пей зеленку']));
-
-	// Клад, золото
-	addAfterLabel($box, 'Золота', getGenSayButton('ещё', ['Ищи клад', 'Ищи золото']));
-
-	// Back to home
-	addAfterLabel($box, 'Столбов от столицы', getGenSayButton('дом', ['Иди в город', 'Возвращайся в город']));
+	addSayPhraseAfterLabel($box, 'Уровень', 'ещё', 'exp');
+	addSayPhraseAfterLabel($box, 'Здоровье', 'ещё', 'heal');
+	addSayPhraseAfterLabel($box, 'Золота', 'ещё', 'gold');
+	addSayPhraseAfterLabel($box, 'Задание', 'отмена', 'cancel_task');
+	addSayPhraseAfterLabel($box, 'Задание', 'ещё', 'do_task');
+	addSayPhraseAfterLabel($box, 'Смертей', 'ещё', 'die');
+	addSayPhraseAfterLabel($box, 'Столбов от столицы', 'дом', 'town');
 }
 
 // -------- do all improvements ----------

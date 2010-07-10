@@ -32,7 +32,7 @@ function isAlreadyImproved($elem) {
 function addAfterLabel($base_elem, label_name, $elem) {
 	var $label = $('.l_capt', $base_elem).filter(function(index){
 			return $(this).text() == label_name;
-		}); 
+		});
 
 	$label.after($elem.addClass('label-appended'));
 }
@@ -104,8 +104,6 @@ function improveSayDialog() {
 
 	// Молитва
 	addAfterLabel($box, 'Прана', getGenSayButton('ещё', ['Кто не молится, тот не ест','Молись, собака, смертный прыщ! На колени!']));
-	
-
 }
 
 // ----------- Вести с полей ----------------
@@ -140,7 +138,6 @@ function improveStats() {
 
 	// Back to home
 	addAfterLabel($box, 'Столбов от столицы', getGenSayButton('дом', ['Иди в город', 'Возвращайся в город']));
-
 }
 
 // -------- do all improvements ----------
@@ -158,6 +155,3 @@ $(function() {
 	// may be use less expensive event (live? handle ajax request?)
 	$('body').hover( function() { improve(); } )
 });
-
-
-

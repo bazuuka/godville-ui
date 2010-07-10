@@ -7,6 +7,9 @@
 // @license        GNU General Public License v3
 // ==/UserScript==
 
+GM_addStyle(' .label-appended {float: left; margin-left: 1em;} ');
+
+
 // ------------ HELPERS ---------------
 function get_random_item(arr) {
 	return arr[Math.floor ( Math.random() * arr.length )];
@@ -24,6 +27,24 @@ function isAlreadyImproved($elem) {
 	return false
 }
 
+// Search for label with given name and appends after it
+// given elem
+function addAfterLabel($base_elem, label_name, $elem) {
+	var $label = $('.l_capt', $base_elem).filter(function(index){
+			return $(this).text() == label_name;
+		}); 
+
+	$label.after($elem.addClass('label-appended'));
+}
+
+// Generic say button
+function getGenSayButton(title, array) {
+	return $('<a href="#">' + title + '</a>')
+		.click(function() {
+			sayToHero(get_random_item(array));
+			return false;
+		});
+}
 
 // -------- Hero Loot -----------------
 function getInspectQueryText(item_name) {
@@ -68,14 +89,6 @@ function improveLoot() {
 
 
 // -------------- Phrases ---------------------------
-// Generic say button
-function getGenSayButton(title, array) {
-	return $('<a href="#">' + title + '</a>')
-		.click(function() {
-			sayToHero(get_random_item(array));
-			return false;
-		});
-}
 
 function improveSayDialog() {
 	if (isAlreadyImproved( $('#aog_box') )) return;
@@ -83,32 +96,37 @@ function improveSayDialog() {
 	// Hide hint
 	$('#aog_hint_label').hide();
 
-	// Add div for buttons
-	var $btns = $('<div/>');
-	$('.aog_capt').after($btns);
-	// Клад
-	$btns.append(getGenSayButton('клад', ['Ищи клад', 'Ищи золото']
-	                              )).append(', ');
-	// Опыт
-	$btns.append(getGenSayButton('опыт', ['Набирайся опыта', 'Учись, набирайся опыта']
-	                              )).append(', ');
-	// Молитва
-	$btns.append(getGenSayButton('прана', ['Кто не молится, тот не ест',
-					       'Молись, собака, смертный прыщ! На колени!'
-					       ]
-	                              )).append(', ');
+	// Add links
+	var $box = $('#hero_actsofgod');
+
 	// Жертва
-	$btns.append(getGenSayButton('жертва', ['Принеси мне жертву', 'Жертву мне жеертвуу!']
-	                              )).append(', ');
-	// В город
-	$btns.append(getGenSayButton('в город',['Иди в город', 'Возвращайся в город']
-	                              ));
+	addAfterLabel($box, 'Прана', getGenSayButton('жертва', ['Принеси мне жертву', 'Жертву мне жеертвуу!']));
+
+	// Молитва
+	addAfterLabel($box, 'Прана', getGenSayButton('ещё', ['Кто не молится, тот не ест','Молись, собака, смертный прыщ! На колени!']));
+	
+
 }
 
 // ---------- Stats --------------
 
 function improveStats() {
-	if (isAlreadyImproved( $('#hero_stats_i') )) return;
+	if (isAlreadyImproved( $('#hs_box') )) return;
+
+	var $box = $('#hero_stats');
+
+	// Опыт, еще опыт, думай
+	addAfterLabel($box, 'Уровень', getGenSayButton('ещё', ['Набирайся опыта', 'Учись, набирайся опыта']));
+
+	// Кнопка лечения
+	addAfterLabel($box, 'Здоровье', getGenSayButton('ещё', ['Лечись', 'Пей зеленку']));
+
+	// Клад, золото
+	addAfterLabel($box, 'Золота', getGenSayButton('ещё', ['Ищи клад', 'Ищи золото']));
+
+	// Back to home
+	addAfterLabel($box, 'Столбов от столицы', getGenSayButton('дом', ['Иди в город', 'Возвращайся в город']));
+
 }
 
 // -------- do all improvements ----------

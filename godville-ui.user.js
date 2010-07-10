@@ -8,6 +8,10 @@
 // @license        GNU General Public License v3
 // ==/UserScript==
 
+var version = 1;
+var script_link = 'http://userscripts.org/scripts/show/81101';
+
+
 // Style
 GM_addStyle(' .label-appended {float: left; margin-left: 1em;} ');
 
@@ -17,6 +21,17 @@ GM_addStyle(' .label-appended {float: left; margin-left: 1em;} ');
 // пришлось использовать небезопасный eval.
 // TODO: JSON.minify? yaml? -- и для того и другого нужна еще одна библиотечка
 var words = eval('(' + GM_getResourceText('Words') + ')');
+
+// Проверка версии
+if (words['version'] > version) {
+	alert("Внимание! Вы используете новый phrases.json со старым скриптом!\n\n"
+		  + ' - попробуйте обновить скрипт: ' + script_link + "\n"
+		  + '(предварительно сохраните новый phrases.json, не зря же вы его вручную ставили)');
+} else if (words['version'] < version) {
+	alert("Внимание! Вы используете старый phrases.json с новым скриптом\n\n"
+		  + " - попробуйте переустановить скрипт: " + script_link + "\n"
+		  + " - или, если Вы изменяли phrases.json, и сейчас используете его, вручную найти что изменилось и поправить");
+}
 
 // ------------------------
 //      HELPERS

@@ -163,9 +163,7 @@ function getArenaSayBox() {
 	appendCheckbox($div, 'say_heal', 'лечись');
 	appendCheckbox($div, 'say_pray', 'молись');
 
-	var $say = $('<a href="#">сказать</a>')
-		.click(function() { sayToHero(generateArenaPhrase); return false;});
-	$div.append($say);
+	$div.click(function() { sayToHero(generateArenaPhrase);});
 	return $div;
 }
 

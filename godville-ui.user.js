@@ -96,8 +96,7 @@ function getInspectQueryText(item_name) {
 }
 
 function isHealItem(item_name) {
-	var items = words['items']['heal'];
-	return items.indexOf(items) >= 0;
+	return words['items']['heal'].indexOf(item_name) >= 0;
 }
 
 // Main button creater

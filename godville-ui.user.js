@@ -13,7 +13,8 @@ var script_link = 'http://userscripts.org/scripts/show/81101';
 
 
 // Style
-GM_addStyle(' .label-appended {float: left; margin-left: 1em;} ');
+// TODO: вынести стиль в отдельный файл и подключить с помощью @resource
+GM_addStyle(' .label-appended {float: left; margin-left: 1em;} #arena_say_box a { margin-left: 1em; }');
 
 //  --- All words from phrases.json ---
 
@@ -127,6 +128,48 @@ function improveLoot() {
 
 // -------------- Phrases ---------------------------
 
+function isArena() {
+	return $('#last_items_arena').length > 0;
+}
+
+function appendCheckbox($div, id, label) {
+	$div.append('<input type="checkbox" id="' + id +  '" >');
+	$div.append('<label for="' + id + '">' + label + '</label>');
+}
+
+function generateArenaPhrase() {
+	var parts = [];
+	var keys = ['hit', 'heal', 'pray'];
+	for (i in keys) {
+		var key = keys[i];
+		if ($('#say_' + key).is(':checked')) {
+			parts.push(get_random_phrase(key));
+		}
+	}
+	// TODO: shuffle parts
+	// TODO: smart join: .... , .... и ....
+	var msg = parts.join(', ');
+	if(msg.length < 80) {
+		return msg;
+	} else {
+		return generateArenaPhrase();
+	}
+}
+
+function getArenaSayBox() {
+	// TODO: стиль для бокса, чтобы он был по центру
+	var $div = $('<div id="arena_say_box"></div>');
+
+	appendCheckbox($div, 'say_hit', 'бей');
+	appendCheckbox($div, 'say_heal', 'лечись');
+	appendCheckbox($div, 'say_pray', 'молись');
+
+	var $say = $('<a href="#">сказать</a>')
+		.click(function() { sayToHero(generateArenaPhrase); return false;});
+	$div.append($say);
+	return $div;
+}
+
 function improveSayDialog() {
 	if (isAlreadyImproved( $('#aog_box') )) return;
 
@@ -136,8 +179,12 @@ function improveSayDialog() {
 	// Add links
 	var $box = $('#hero_actsofgod');
 
-	addSayPhraseAfterLabel($box, 'Прана', 'жертва', 'sacrifice');
-	addSayPhraseAfterLabel($box, 'Прана', 'ещё', 'pray');
+	if (isArena()) {
+		$('#god_phrase_form').before(getArenaSayBox());
+	} else {
+		addSayPhraseAfterLabel($box, 'Прана', 'жертва', 'sacrifice');
+		addSayPhraseAfterLabel($box, 'Прана', 'ещё', 'pray');
+	}
 }
 
 // ----------- Вести с полей ----------------

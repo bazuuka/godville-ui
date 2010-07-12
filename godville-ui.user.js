@@ -60,14 +60,16 @@ function isAlreadyImproved($elem) {
 	return false
 }
 
+function findLabel($base_elem, label_name) {
+	return $('.l_capt', $base_elem).filter(function(index){
+			return $(this).text() == label_name;
+		});
+}
+
 // Search for label with given name and appends after it
 // given elem
 function addAfterLabel($base_elem, label_name, $elem) {
-	var $label = $('.l_capt', $base_elem).filter(function(index){
-			return $(this).text() == label_name;
-		});
-
-	$label.after($elem.addClass('label-appended'));
+	findLabel($base_elem, label_name).after($elem.addClass('label-appended'));
 }
 
 // Generic say button
@@ -116,6 +118,12 @@ function watchProgressBar(id, name, descr, $elem) {
 	watchValue(id, name, descr, 100 - $elem.css('width').replace(/%/, ''));
 }
 
+function watchLabelCounter(id, name, descr, $container, label) {
+	var $label = findLabel($container, label);
+	var $field = $label.nextAll('.field_content').first(); /* Seems it is not very good query */
+	var value = parseInt($field.text());
+	watchValue(id, name, descr, value);
+}
 
 // ------------------------------------
 //  Improvements !!
@@ -214,7 +222,7 @@ function improveSayDialog() {
 		addSayPhraseAfterLabel($box, 'Прана', 'ещё', 'pray');
 	}
 
-	watchProgressBar('prana', 'пр', 'Прана',  $('#pr5'));
+	watchProgressBar('prana', 'pr', 'Прана',  $('#pr5'));
 }
 
 // ----------- Вести с полей ----------------
@@ -243,9 +251,15 @@ function improveStats() {
 	addSayPhraseAfterLabel($box, 'Смертей', 'ещё', 'die');
 	addSayPhraseAfterLabel($box, 'Столбов от столицы', 'дом', 'town');
 
-	watchProgressBar('exp', 'опт', 'Опыт',  $('#pr3'));
-	watchProgressBar('tsk', 'здн', 'Задание',  $('#pr4'));
-
+	watchProgressBar('exp', 'exp', 'Опыт',  $('#pr3'));
+	watchProgressBar('tsk', 'tsk', 'Задание',  $('#pr4'));
+	watchLabelCounter('level', 'lvl', 'Уровень',  $box, 'Уровень');
+	watchLabelCounter('inv', 'inv', 'Инвентарь',  $box, 'Инвентарь');
+	watchLabelCounter('heal', 'hp', 'Здоровье',  $box, 'Здоровье');
+	watchLabelCounter('gold', 'gld', 'Золото',  $box, 'Золота'); /* Не работает! Нужен собственный парсер */
+	watchLabelCounter('monster', 'mns', 'Монстры',  $box, 'Убито монстров');
+ 	watchLabelCounter('death', 'death', 'Смерти',  $box, 'Смертей');
+ 	watchLabelCounter('brick', 'br', 'Кирпичи',  $box, 'Кирпичей для храма'); /* сюда тоже */
 }
 
 // -------- do all improvements ----------

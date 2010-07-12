@@ -93,28 +93,27 @@ function storeParam(id, value) {
 	var data_id = 'param_' + id;
 	var old = $(document).data(data_id);
 	if (old != null) {
-		alert (value, old);
 		diff = value - old;
 	}
 	$(document).data(data_id, value);
 	return diff;
 }
 
-function appendToLog(id, str) {
-	$('#stats_log').append('<li class="' + id + '">' + str + '</li>');
+function appendToLog(id, str, descr) {
+	$('#stats_log').append('<li class="' + id + '" title="' + descr + '">' + str + '</li>');
 	// TODO: удалить первые, если много
 }
 
 // Основной алгоритм слежки
-function watchValue(id, name, value) {
+function watchValue(id, name, descr, value) {
 	var diff = storeParam(id, value);
 	if(diff) {
-		appendToLog(id, name + ':' + value);
+		appendToLog(id, name + ': ' + diff, descr);
 	}
 }
 // Адаптация для прогрессбаров
-function watchProgressBar(id, name, $elem) {
-	watchValue(id, name, 100 - $elem.css('width').replace(/%/, ''));
+function watchProgressBar(id, name, descr, $elem) {
+	watchValue(id, name, descr, 100 - $elem.css('width').replace(/%/, ''));
 }
 
 
@@ -215,7 +214,7 @@ function improveSayDialog() {
 		addSayPhraseAfterLabel($box, 'Прана', 'ещё', 'pray');
 	}
 
-	watchProgressBar('prana', 'прана', $('#pr5'));
+	watchProgressBar('prana', 'пр', 'Прана',  $('#pr5'));
 }
 
 // ----------- Вести с полей ----------------
@@ -243,6 +242,10 @@ function improveStats() {
 	addSayPhraseAfterLabel($box, 'Задание', 'ещё', 'do_task');
 	addSayPhraseAfterLabel($box, 'Смертей', 'ещё', 'die');
 	addSayPhraseAfterLabel($box, 'Столбов от столицы', 'дом', 'town');
+
+	watchProgressBar('exp', 'опт', 'Опыт',  $('#pr3'));
+	watchProgressBar('tsk', 'здн', 'Задание',  $('#pr4'));
+
 }
 
 // -------- do all improvements ----------

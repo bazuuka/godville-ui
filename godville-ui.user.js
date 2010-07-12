@@ -5,6 +5,7 @@
 // @include        http://godville.net/hero*
 // @require        http://mesak-project.googlecode.com/files/jquery.142.gm.js
 // @resource       Words http://github.com/bazuuka/godville-ui/raw/master/phrases.json
+// @resource       Style http://github.com/bazuuka/godville-ui/raw/master/godville-ui.css
 // @license        GNU General Public License v3
 // ==/UserScript==
 
@@ -13,7 +14,7 @@ var script_link = 'http://userscripts.org/scripts/show/81101';
 
 // Style
 // TODO: вынести стиль в отдельный файл и подключить с помощью @resource
-GM_addStyle(' .label-appended {float: left; margin-left: 1em;} #arena_say_box a { margin-left: 1em; }');
+GM_addStyle( GM_getResourceText('Style') );
 
 //  --- All words from phrases.json ---
 

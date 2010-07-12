@@ -11,7 +11,6 @@
 var version = 1;
 var script_link = 'http://userscripts.org/scripts/show/81101';
 
-
 // Style
 // TODO: вынести стиль в отдельный файл и подключить с помощью @resource
 GM_addStyle(' .label-appended {float: left; margin-left: 1em;} #arena_say_box a { margin-left: 1em; }');
@@ -85,6 +84,38 @@ function addSayPhraseAfterLabel($base_elem, label_name, btn_name, section) {
 	var arr = words['phrases'][section];
 	addAfterLabel($base_elem, label_name, getGenSayButton(btn_name, arr));
 }
+
+// Сохранение текущий показателей
+// Возвращает разницу, если уже было что-то записано
+function storeParam(id, value) {
+	var diff = null;
+	var data_id = 'param_' + id;
+	var old = $(document).data(data_id);
+	if (old != null) {
+		alert (value, old);
+		diff = value - old;
+	}
+	$(document).data(data_id, value);
+	return diff;
+}
+
+function appendToLog(id, str) {
+	$('#stats_log').append('<li class="' + id + '">' + str + '</li>');
+	// TODO: удалить первые, если много
+}
+
+// Основной алгоритм слежки
+function watchValue(id, name, value) {
+	var diff = storeParam(id, value);
+	if(diff) {
+		appendToLog(id, name + ':' + value);
+	}
+}
+// Адаптация для прогрессбаров
+function watchProgressBar(id, name, $elem) {
+	watchValue(id, name, 100 - $elem.css('width').replace(/%/, ''));
+}
+
 
 // ------------------------------------
 //  Improvements !!
@@ -182,6 +213,8 @@ function improveSayDialog() {
 		addSayPhraseAfterLabel($box, 'Прана', 'жертва', 'sacrifice');
 		addSayPhraseAfterLabel($box, 'Прана', 'ещё', 'pray');
 	}
+
+	watchProgressBar('prana', 'прана', $('#pr5'));
 }
 
 // ----------- Вести с полей ----------------
@@ -221,6 +254,7 @@ function improve() {
 
 // Main code
 $(function() {
+	$('#menu_bar').after('<ul id="stats_log"/>');
 	improve();
 	// FIXME: this will repear all improve on all mouse movement
 	// may be use less expensive event (live? handle ajax request?)

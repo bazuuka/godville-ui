@@ -15,4 +15,5 @@
 #stats_log li {
 	display: inline;
 	list-item-style: none;
+	margin-left: 1em;
 }

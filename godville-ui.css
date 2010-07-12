@@ -7,3 +7,12 @@
 #arena_say_box a {
 	margin-left: 1em;
 }
+
+#stats_log {
+	background: yellow;
+}
+
+#stats_log li {
+	display: inline;
+	list-item-style: none;
+}

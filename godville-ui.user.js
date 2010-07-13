@@ -110,7 +110,10 @@ function appendToLog(id, str, descr) {
 function watchValue(id, name, descr, value) {
 	var diff = storeParam(id, value);
 	if(diff) {
-		appendToLog(id, name + ': ' + diff, descr);
+		// Округление и добавление плюсика
+		diff = Math.round(diff * 1000) / 1000;
+		s = (diff < 0)? diff : '+' + diff;
+		appendToLog(id, name  + s, descr);
 	}
 }
 // Адаптация для прогрессбаров

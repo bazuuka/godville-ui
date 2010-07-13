@@ -102,8 +102,9 @@ function storeParam(id, value) {
 }
 
 function appendToLog(id, str, descr) {
-	$('#stats_log').append('<li class="' + id + '" title="' + descr + '">' + str + '</li>');
-	// TODO: удалить первые, если много
+	var $logger = $('#stats_log');
+	$logger.append('<li class="' + id + '" title="' + descr + '">' + str + '</li>');
+	$logger.scrollLeft($logger.width());
 }
 
 // Основной алгоритм слежки

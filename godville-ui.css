@@ -9,6 +9,10 @@
 }
 
 #stats_log {
+	width: 90%;
+	overflow-x: hidden;
+	white-space: nowrap;
+	margin: auto;
 }
 
 #stats_log li {

@@ -104,7 +104,7 @@ function storeParam(id, value) {
 function appendToLog(id, str, descr) {
 	var $logger = $('#stats_log');
 	$logger.append('<li class="' + id + '" title="' + descr + '">' + str + '</li>');
-	$logger.scrollLeft($logger.width());
+	$logger.scrollLeft(10000000); //Dirty fix
 }
 
 // Основной алгоритм слежки

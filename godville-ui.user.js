@@ -205,10 +205,10 @@ function improveStats() {
 
 	addSayPhraseAfterLabel($box, 'Уровень', 'ещё', 'exp');
 	addSayPhraseAfterLabel($box, 'Здоровье', 'ещё', 'heal');
-	addSayPhraseAfterLabel($box, 'Золота', 'ещё', 'gold');
-	addSayPhraseAfterLabel($box, 'Задание', 'отмена', 'cancel_task');
+	addSayPhraseAfterLabel($box, 'Золота', 'клад', 'gold');
+	//addSayPhraseAfterLabel($box, 'Задание', 'отмена', 'cancel_task');
 	addSayPhraseAfterLabel($box, 'Задание', 'ещё', 'do_task');
-	addSayPhraseAfterLabel($box, 'Смертей', 'ещё', 'die');
+	//addSayPhraseAfterLabel($box, 'Смертей', 'ещё', 'die');
 	addSayPhraseAfterLabel($box, 'Столбов от столицы', 'дом', 'town');
 }
 

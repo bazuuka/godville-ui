@@ -23,7 +23,7 @@
 #stats_log .level   { color: red; font-weight: bold; }
 #stats_log .inv     { color: sienna; }
 #stats_log .heal    { color: green; }
-#stats_log .gold    { color: gold; }
+#stats_log .gold    { color: orangered; }
 #stats_log .monster { color: darkmagenta; }
 #stats_log .death   { color: red; }
 #stats_log .brick   { color: mediumblue; }

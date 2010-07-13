@@ -121,10 +121,11 @@ function watchProgressBar(id, name, descr, $elem) {
 	watchValue(id, name, descr, 100 - $elem.css('width').replace(/%/, ''));
 }
 
-function watchLabelCounter(id, name, descr, $container, label) {
+function watchLabelCounter(id, name, descr, $container, label, parser) {
+	parser = parser || parseInt;
 	var $label = findLabel($container, label);
 	var $field = $label.nextAll('.field_content').first(); /* Seems it is not very good query */
-	var value = parseInt($field.text());
+	var value = parser($field.text());
 	watchValue(id, name, descr, value);
 }
 
@@ -254,15 +255,20 @@ function improveStats() {
 	addSayPhraseAfterLabel($box, 'Смертей', 'ещё', 'die');
 	addSayPhraseAfterLabel($box, 'Столбов от столицы', 'дом', 'town');
 
+	// Парсер строки с золотом
+	var gold_parser = function(val) {
+		return parseInt(val.replace(/[^0-9]/g, ''));
+	};
+
 	watchProgressBar('exp', 'exp', 'Опыт (проценты)',  $('#pr3'));
 	watchProgressBar('task', 'tsk', 'Задание (проценты)',  $('#pr4'));
 	watchLabelCounter('level', 'lvl', 'Уровень',  $box, 'Уровень');
 	watchLabelCounter('inv', 'inv', 'Инвентарь',  $box, 'Инвентарь');
 	watchLabelCounter('heal', 'hp', 'Здоровье',  $box, 'Здоровье');
-	watchLabelCounter('gold', 'gld', 'Золото',  $box, 'Золота'); /* Не работает! Нужен собственный парсер */
+	watchLabelCounter('gold', 'gld', 'Золото',  $box, 'Золота', gold_parser);
 	watchLabelCounter('monster', 'mns', 'Монстры',  $box, 'Убито монстров');
  	watchLabelCounter('death', 'death', 'Смерти',  $box, 'Смертей');
- 	watchLabelCounter('brick', 'br', 'Кирпичи',  $box, 'Кирпичей для храма'); /* сюда тоже */
+ 	watchLabelCounter('brick', 'br', 'Кирпичи',  $box, 'Кирпичей для храма', parseFloat);
 }
 
 // -------- do all improvements ----------

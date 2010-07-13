@@ -251,8 +251,8 @@ function improveStats() {
 	addSayPhraseAfterLabel($box, 'Смертей', 'ещё', 'die');
 	addSayPhraseAfterLabel($box, 'Столбов от столицы', 'дом', 'town');
 
-	watchProgressBar('exp', 'exp', 'Опыт',  $('#pr3'));
-	watchProgressBar('tsk', 'tsk', 'Задание',  $('#pr4'));
+	watchProgressBar('exp', 'exp', 'Опыт (проценты)',  $('#pr3'));
+	watchProgressBar('task', 'tsk', 'Задание (проценты)',  $('#pr4'));
 	watchLabelCounter('level', 'lvl', 'Уровень',  $box, 'Уровень');
 	watchLabelCounter('inv', 'inv', 'Инвентарь',  $box, 'Инвентарь');
 	watchLabelCounter('heal', 'hp', 'Здоровье',  $box, 'Здоровье');

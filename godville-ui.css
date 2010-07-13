@@ -9,11 +9,21 @@
 }
 
 #stats_log {
-	background: yellow;
 }
 
 #stats_log li {
 	display: inline;
 	list-item-style: none;
-	margin-left: 1em;
+	margin-left: 0.5em;
 }
+
+#stats_log .prana   { color: #199bdc; }
+#stats_log .exp     { color: #f9b436; }
+#stats_log .task    { color: pink; }
+#stats_log .level   { color: red; font-weight: bold; }
+#stats_log .inv     { color: sienna; }
+#stats_log .heal    { color: green; }
+#stats_log .gold    { color: gold; }
+#stats_log .monster { color: black; }
+#stats_log .death   { color: black; }
+#stats_log .brick   { color: black; }

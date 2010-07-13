@@ -24,6 +24,6 @@
 #stats_log .inv     { color: sienna; }
 #stats_log .heal    { color: green; }
 #stats_log .gold    { color: gold; }
-#stats_log .monster { color: black; }
-#stats_log .death   { color: black; }
-#stats_log .brick   { color: black; }
+#stats_log .monster { color: darkmagenta; }
+#stats_log .death   { color: red; }
+#stats_log .brick   { color: mediumblue; }

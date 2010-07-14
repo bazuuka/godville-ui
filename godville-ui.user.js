@@ -292,7 +292,7 @@ function improveSayDialog() {
 		$('#god_phrase_btn').click(function () {timeout_bar.start(); return true;});
 	}
 
-	logger.watchProgressBar('prana', 'pr', 'Прана',  $('#pr5'));
+	logger.watchLabelCounter('prana', 'pr', 'Прана (проценты)',  $box, 'Прана');
 }
 
 // ----------- Вести с полей ----------------

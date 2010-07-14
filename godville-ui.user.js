@@ -136,7 +136,7 @@ function addSayPhraseAfterLabel($base_elem, label_name, btn_name, section) {
 // ------------------------
 // logger.create -- создать объект
 // logger.appendStr -- добавить строчку в конец лога
-// logger.appendSeparator -- добавить разделитель в конец (если не было)
+// logger.needSepratorHere -- перед первой же следующей записью вставится разделитель
 // logger.watchProgressBar -- следить за полоской
 // logger.watchLabelCounter -- следить за значением лабела
 var logger = {
@@ -146,16 +146,21 @@ var logger = {
 	},
 
 	appendStr: function(id, str, descr) {
+		// append separator if needed
+		if (this.need_separator) {
+			this.need_separator = false;
+			if (this.elem.children().length > 0) {
+				this.elem.append('<li class="separator">|</li>');
+			}
+		}
+		// apend string
 		this.elem.append('<li class="' + id + '" title="' + descr + '">' + str + '</li>');
 		this.elem.scrollLeft(10000000); //Dirty fix
 	},
 
-/*	appendSeparator: function() {
-		var last = this.elem.children().last();
-		if(! last.hasClass('separator')) {
-			this.elem.append('<li class="separator">|</li>');
-		}
-	}, */
+	needSeparatorHere: function() {
+		this.need_separator = true;
+	},
 
 	watchValue: function(id, name, descr, value) {
 		var diff = storage.set_with_diff('logger_param_' + id, value);
@@ -328,6 +333,7 @@ function improveStats() {
 
 // -------- do all improvements ----------
 function improve() {
+	logger.needSeparatorHere();
 	improveLoot();
 	improveSayDialog();
 	improveStats();

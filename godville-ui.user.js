@@ -53,6 +53,30 @@ var timeout_bar = {
 	}
 };
 
+// -----------------------
+// Storage wrapper
+// -----------------------
+// storage.set -- store value
+// storage.get -- read value
+// storage.set_with_diff -- store value and get diff with old
+var storage = {
+	set: function(id, value) {
+		GM_setValue(id, "" + value);
+	},
+	get: function(id) {
+		return GM_getValue(id, null);
+	},
+	set_with_diff: function(id, value) {
+		var diff = null;
+		var old = this.get(id);
+		if (old != null) {
+			diff = value - old;
+		}
+		this.set(id, value);
+		return diff;
+	}
+}
+
 // ------------------------
 //      HELPERS
 // ------------------------
@@ -107,47 +131,55 @@ function addSayPhraseAfterLabel($base_elem, label_name, btn_name, section) {
 	addAfterLabel($base_elem, label_name, getGenSayButton(btn_name, arr));
 }
 
-// Сохранение текущий показателей
-// Возвращает разницу, если уже было что-то записано
-function storeParam(id, value) {
-	var diff = null;
-	var data_id = 'param_' + id;
-	var old = $(document).data(data_id);
-	if (old != null) {
-		diff = value - old;
-	}
-	$(document).data(data_id, value);
-	return diff;
-}
+// ------------------------
+// Oneline logger
+// ------------------------
+// logger.create -- создать объект
+// logger.appendStr -- добавить строчку в конец лога
+// logger.appendSeparator -- добавить разделитель в конец (если не было)
+// logger.watchProgressBar -- следить за полоской
+// logger.watchLabelCounter -- следить за значением лабела
+var logger = {
+	create: function() {
+		this.elem = $('<ul id="stats_log"/>');
+		$('#menu_bar').after(this.elem);
+	},
 
-function appendToLog(id, str, descr) {
-	var $logger = $('#stats_log');
-	$logger.append('<li class="' + id + '" title="' + descr + '">' + str + '</li>');
-	$logger.scrollLeft(10000000); //Dirty fix
-}
+	appendStr: function(id, str, descr) {
+		this.elem.append('<li class="' + id + '" title="' + descr + '">' + str + '</li>');
+		this.elem.scrollLeft(10000000); //Dirty fix
+	},
 
-// Основной алгоритм слежки
-function watchValue(id, name, descr, value) {
-	var diff = storeParam(id, value);
-	if(diff) {
-		// Округление и добавление плюсика
-		diff = Math.round(diff * 1000) / 1000;
-		s = (diff < 0)? diff : '+' + diff;
-		appendToLog(id, name  + s, descr);
-	}
-}
-// Адаптация для прогрессбаров
-function watchProgressBar(id, name, descr, $elem) {
-	watchValue(id, name, descr, 100 - $elem.css('width').replace(/%/, ''));
-}
+/*	appendSeparator: function() {
+		var last = this.elem.children().last();
+		if(! last.hasClass('separator')) {
+			this.elem.append('<li class="separator">|</li>');
+		}
+	}, */
 
-function watchLabelCounter(id, name, descr, $container, label, parser) {
-	parser = parser || parseInt;
-	var $label = findLabel($container, label);
-	var $field = $label.nextAll('.field_content').first(); /* Seems it is not very good query */
-	var value = parser($field.text());
-	watchValue(id, name, descr, value);
-}
+	watchValue: function(id, name, descr, value) {
+		var diff = storage.set_with_diff('logger_param_' + id, value);
+		if(diff) {
+			// Округление и добавление плюсика
+			diff = Math.round(diff * 1000) / 1000;
+			s = (diff < 0)? diff : '+' + diff;
+
+			this.appendStr(id, name  + s, descr);
+		}
+	},
+
+	watchProgressBar: function(id, name, descr, $elem) {
+		this.watchValue(id, name, descr, 100 - $elem.css('width').replace(/%/, ''));
+	},
+
+	watchLabelCounter: function(id, name, descr, $container, label, parser) {
+		parser = parser || parseInt;
+		var $label = findLabel($container, label);
+		var $field = $label.nextAll('.field_content').first();
+		var value = parser($field.text());
+		this.watchValue(id, name, descr, value);
+	},
+};
 
 // ------------------------------------
 //  Improvements !!
@@ -249,7 +281,7 @@ function improveSayDialog() {
 		$('#god_phrase_btn').click(function () {timeout_bar.start(); return true;});
 	}
 
-	watchProgressBar('prana', 'pr', 'Прана',  $('#pr5'));
+	logger.watchProgressBar('prana', 'pr', 'Прана',  $('#pr5'));
 }
 
 // ----------- Вести с полей ----------------
@@ -283,15 +315,15 @@ function improveStats() {
 		return parseInt(val.replace(/[^0-9]/g, ''));
 	};
 
-	watchProgressBar('exp', 'exp', 'Опыт (проценты)',  $('#pr3'));
-	watchProgressBar('task', 'tsk', 'Задание (проценты)',  $('#pr4'));
-	watchLabelCounter('level', 'lvl', 'Уровень',  $box, 'Уровень');
-	watchLabelCounter('inv', 'inv', 'Инвентарь',  $box, 'Инвентарь');
-	watchLabelCounter('heal', 'hp', 'Здоровье',  $box, 'Здоровье');
-	watchLabelCounter('gold', 'gld', 'Золото',  $box, 'Золота', gold_parser);
-	watchLabelCounter('monster', 'mns', 'Монстры',  $box, 'Убито монстров');
- 	watchLabelCounter('death', 'death', 'Смерти',  $box, 'Смертей');
- 	watchLabelCounter('brick', 'br', 'Кирпичи',  $box, 'Кирпичей для храма', parseFloat);
+	logger.watchProgressBar('exp', 'exp', 'Опыт (проценты)',  $('#pr3'));
+	logger.watchProgressBar('task', 'tsk', 'Задание (проценты)',  $('#pr4'));
+	logger.watchLabelCounter('level', 'lvl', 'Уровень',  $box, 'Уровень');
+	logger.watchLabelCounter('inv', 'inv', 'Инвентарь',  $box, 'Инвентарь');
+	logger.watchLabelCounter('heal', 'hp', 'Здоровье',  $box, 'Здоровье');
+	logger.watchLabelCounter('gold', 'gld', 'Золото',  $box, 'Золота', gold_parser);
+	logger.watchLabelCounter('monster', 'mns', 'Монстры',  $box, 'Убито монстров');
+ 	logger.watchLabelCounter('death', 'death', 'Смерти',  $box, 'Смертей');
+ 	logger.watchLabelCounter('brick', 'br', 'Кирпичи',  $box, 'Кирпичей для храма', parseFloat);
 }
 
 // -------- do all improvements ----------
@@ -304,7 +336,7 @@ function improve() {
 
 // Main code
 $(function() {
-	$('#menu_bar').after('<ul id="stats_log"/>');
+	logger.create();
 	timeout_bar.create();
 
 	improve();

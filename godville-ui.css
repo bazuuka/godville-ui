@@ -7,3 +7,13 @@
 #arena_say_box a {
 	margin-left: 1em;
 }
+
+#timeout_bar {
+	height: 3px;
+	width: 0px;
+	display: block;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background: blue;
+}

@@ -36,6 +36,25 @@ if (words['version'] > version) {
 }
 
 // ------------------------
+// Timeout bar
+// -----------------------
+// timeout_bar.create -- создать объект
+// timeout_bar.start([seconds]) -- пустить полоску
+var timeout_bar = {
+	create: function() {
+		this.elem = $('<div id="timeout_bar"/>');
+		$('#menu_bar').after(this.elem);
+	},
+
+	start: function(timeout) {
+		timeout = timeout || 30;
+		this.elem.stop();
+		this.elem.css('width', '100%');
+		this.elem.animate({width: 0}, timeout * 1000, 'linear');
+	}
+};
+
+// ------------------------
 //      HELPERS
 // ------------------------
 
@@ -182,6 +201,9 @@ function improveSayDialog() {
 	} else {
 		addSayPhraseAfterLabel($box, 'Прана', 'жертва', 'sacrifice');
 		addSayPhraseAfterLabel($box, 'Прана', 'ещё', 'pray');
+
+		// Show timeout bar after saying
+		$('#god_phrase_btn').click(function () {timeout_bar.start(); return true;});
 	}
 }
 
@@ -222,6 +244,7 @@ function improve() {
 
 // Main code
 $(function() {
+	timeout_bar.create();
 	improve();
 	// FIXME: this will repear all improve on all mouse movement
 	// may be use less expensive event (live? handle ajax request?)

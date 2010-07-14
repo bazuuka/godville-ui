@@ -12,7 +12,9 @@
 	height: 3px;
 	width: 0px;
 	display: block;
-	position: absolute;
+	position: fixed;
+	z-index: 2;
+	opacity: 0.5;
 	top: 0px;
 	left: 0px;
 	background: blue;

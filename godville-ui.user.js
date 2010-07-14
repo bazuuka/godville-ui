@@ -199,6 +199,10 @@ function isHealItem(item_name) {
 	return words['items']['heal'].indexOf(item_name) >= 0;
 }
 
+function canBeActivated($obj) {
+	return $obj.text().match(/\(\@\)/);
+}
+
 // Main button creater
 function improveLoot() {
 	if (isAlreadyImproved($('#inv_box'))) return;
@@ -218,6 +222,8 @@ function improveLoot() {
 		// color items, and add buttons
 		if (isHealItem(item_name)) {
 			$obj.css('color', 'green');
+		} else if (canBeActivated($obj)) {
+			// Ничего не делать на активируемые вещи
 		} else {
 			$obj.append(createInspectButton(item_name));
 		}

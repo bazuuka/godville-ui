@@ -184,6 +184,13 @@ var logger = {
 		var value = parser($field.text());
 		this.watchValue(id, name, descr, value);
 	},
+
+	watchEquipCounter: function(id, name, descr, $container, label) {
+		var $label = findLabel($container, label);
+		var $field = $label.nextAll('.equip_content').first();
+		var value = $field.text().replace(/.*([+-][0-9]+)/, "$1");
+		this.watchValue(id, name, descr, parseInt(value));
+	}
 };
 
 // ------------------------------------
@@ -337,6 +344,24 @@ function improveStats() {
  	logger.watchLabelCounter('brick', 'br', 'Кирпичи',  $box, 'Кирпичей для храма', parseFloat);
 }
 
+// ---------- Equipment --------------
+
+function improveEquip() {
+	if (isAlreadyImproved( $('#equipment_box') )) return;
+
+	// Add links
+	var $box = $('#equipment_box');
+
+	logger.watchEquipCounter('equip1', 'eq1', 'Оружие',    $box, 'Оружие');
+	logger.watchEquipCounter('equip2', 'eq2', 'Щит',       $box, 'Щит');
+	logger.watchEquipCounter('equip3', 'eq3', 'Голова',    $box, 'Снаряжение на голову');
+	logger.watchEquipCounter('equip4', 'eq4', 'Тело',      $box, 'Снаряжение на тело');
+	logger.watchEquipCounter('equip5', 'eq5', 'Руки',      $box, 'Снаряжение на руки');
+	logger.watchEquipCounter('equip6', 'eq6', 'Ноги',      $box, 'Снаряжение на ноги');
+	logger.watchEquipCounter('equip7', 'eq7', 'Талисман',  $box, 'Талисман');
+	console.log(GM_listValues());
+}
+
 // -------- do all improvements ----------
 function improve() {
 	logger.needSeparatorHere();
@@ -344,6 +369,7 @@ function improve() {
 	improveSayDialog();
 	improveStats();
 	improveFieldBox();
+	improveEquip();
 }
 
 // Main code

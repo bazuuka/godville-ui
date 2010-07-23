@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           godville-ui
-// @version        7.0
+// @version        7.7
 // @namespace      http://godville.net/userscripts
 // @description    Some improvements for godville ui
 // @include        http://godville.net/hero*

@@ -373,6 +373,10 @@ function improve() {
 	improveEquip();
 }
 
+function getReformalLink() {
+	return $('<a id="reformal" href="http://godville-ui.reformal.ru/" target="about:blank">есть идеи?</a>');
+}
+
 // Main code
 $(function() {
 	logger.create();
@@ -382,4 +386,6 @@ $(function() {
 	// FIXME: this will repear all improve on all mouse movement
 	// may be use less expensive event (live? handle ajax request?)
 	$('body').hover( function() { improve(); } );
+	// Insert referal widget
+	$('#menu_bar ul').append( $('<li> | </li>').append(getReformalLink()) );
 });

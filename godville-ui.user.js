@@ -7,6 +7,7 @@
 // @require        http://mesak-project.googlecode.com/files/jquery.142.gm.js
 // @resource       Words http://github.com/bazuuka/godville-ui/raw/master/phrases.json
 // @resource       Style http://github.com/bazuuka/godville-ui/raw/master/godville-ui.css
+// @resource       Reformal http://github.com/bazuuka/godville-ui/raw/master/reformal-widget.html
 // @license        GNU General Public License v3
 // ==/UserScript==
 
@@ -256,4 +257,6 @@ $(function() {
 	// FIXME: this will repear all improve on all mouse movement
 	// may be use less expensive event (live? handle ajax request?)
 	$('body').hover( function() { improve(); } );
+	// Insert referal widget
+	alert(GM_getResourceText('Reformal'));
 });

@@ -7,7 +7,6 @@
 // @require        http://mesak-project.googlecode.com/files/jquery.142.gm.js
 // @resource       Words http://github.com/bazuuka/godville-ui/raw/master/phrases.json
 // @resource       Style http://github.com/bazuuka/godville-ui/raw/master/godville-ui.css
-// @resource       Reformal http://github.com/bazuuka/godville-ui/raw/master/reformal-widget.html
 // @license        GNU General Public License v3
 // ==/UserScript==
 
@@ -250,6 +249,10 @@ function improve() {
 	improveFieldBox();
 }
 
+function getReformalLink() {
+	return $('<a id="reformal" href="http://godville-ui.reformal.ru/" target="about:blank">есть идеи?</a>');
+}
+
 // Main code
 $(function() {
 	timeout_bar.create();
@@ -258,5 +261,5 @@ $(function() {
 	// may be use less expensive event (live? handle ajax request?)
 	$('body').hover( function() { improve(); } );
 	// Insert referal widget
-	alert(GM_getResourceText('Reformal'));
+	$('#menu_bar ul').append( $('<li> | </li>').append(getReformalLink()) );
 });

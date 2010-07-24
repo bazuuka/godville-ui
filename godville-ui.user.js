@@ -364,14 +364,23 @@ function improveEquip() {
 }
 
 // -------- do all improvements ----------
+var ImproveInProcess = false;
 function improve() {
-	logger.needSeparatorHere();
-	improveLoot();
-	improveSayDialog();
-	improveStats();
-	improveFieldBox();
-	improveEquip();
+	ImproveInProcess = true;
+	try {
+		logger.needSeparatorHere();
+		improveLoot();
+		improveSayDialog();
+		improveStats();
+		improveFieldBox();
+		improveEquip();
+	} catch (x) {
+		GM_log(x);
+	} finally {
+		ImproveInProcess = false;
+	}
 }
+
 
 function getReformalLink() {
 	return $('<a id="reformal" href="http://godville-ui.reformal.ru/" target="about:blank">есть идеи?</a>');
@@ -379,13 +388,19 @@ function getReformalLink() {
 
 // Main code
 $(function() {
-	logger.create();
-	timeout_bar.create();
+	  logger.create();
+	  timeout_bar.create();
 
-	improve();
-	// FIXME: this will repear all improve on all mouse movement
-	// may be use less expensive event (live? handle ajax request?)
-	$('body').hover( function() { improve(); } );
-	// Insert referal widget
-	$('#menu_bar ul').append( $('<li> | </li>').append(getReformalLink()) );
+	  improve();
+	  // FIXME: this will repear all improve on all mouse movement
+	  // may be use less expensive event (live? handle ajax request?)
+	  // Insert referal widget
+	  $('#menu_bar ul').append( $('<li> | </li>').append(getReformalLink()) );
+
+	  //$('body').hover( function() { improve(); } );
+	  $(document).bind("DOMNodeInserted", function () {
+						   if(!ImproveInProcess)
+							   setTimeout(improve, 1);
+					   });
+
 });

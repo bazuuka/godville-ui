@@ -363,6 +363,23 @@ function improveEquip() {
 	console.log(GM_listValues());
 }
 
+// -------------- Переписка ---------------------------
+
+function improveMailbox() {
+	if (isAlreadyImproved( $('#recent_friends') )) return;
+
+	// Ссылки на информацию о боге по средней кнопке мыши
+	$('#recent_friends .new_line a')
+		.each(function(ind, obj) {
+				  if (obj.innerHTML == 'показать всех знакомых'
+					  || obj.innerHTML.substring(0, 20) == 'скрыть всех знакомых') {
+					  return;
+				  }
+				  obj.href = "http://godville.net/gods/"+obj.innerHTML;
+			  });
+
+}
+
 // -------- do all improvements ----------
 function improve() {
 	logger.needSeparatorHere();
@@ -371,6 +388,7 @@ function improve() {
 	improveStats();
 	improveFieldBox();
 	improveEquip();
+	improveMailbox();
 }
 
 function getReformalLink() {

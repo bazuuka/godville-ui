@@ -360,7 +360,6 @@ function improveEquip() {
 	logger.watchEquipCounter('equip5', 'eq5', 'Руки',      $box, 'Снаряжение на руки');
 	logger.watchEquipCounter('equip6', 'eq6', 'Ноги',      $box, 'Снаряжение на ноги');
 	logger.watchEquipCounter('equip7', 'eq7', 'Талисман',  $box, 'Талисман');
-	console.log(GM_listValues());
 }
 
 // -------------- Переписка ---------------------------

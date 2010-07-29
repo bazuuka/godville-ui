@@ -105,16 +105,20 @@ var storage = {
 	get: function(id) {
 		return GM_getValue(id, null);
 	},
-	set_with_diff: function(id, value) {
+	diff: function(id, value) {
 		var diff = null;
 		var old = this.get(id);
 		if (old != null) {
 			diff = value - old;
 		}
+		return diff;
+	},
+	set_with_diff: function(id, value) {
+		var diff = this.diff(id, value);
 		this.set(id, value);
 		return diff;
 	}
-}
+};
 
 // ------------------------
 //      HELPERS
@@ -271,23 +275,37 @@ var logger = {
 // Updater
 // ------------------------------------
 var updater = {
-	get_installed: function() {
+	storage_key: 'update_timer',
+	installed: '',
+	avaliable: '',
+	//interval: 60 * 60,  // every hour
+	interval: 5,
+
+	getUpdateLink: function(label, version) {
+		var link = source_link_template.replace(/%tag%/, 'v' + tag);
+		return $('<a id="update" href="' + link + '">' + label + '</a>');
+	},
+
+	step1: function() {
 		this.installed = GM_getResourceText('Version');
-	},
-
-	get_available: function() {
-		jQuery.get(source_link, function(data) {
+		jQuery.get(version_link, function(data) {
 					   updater.available = data;
-				   });
+					   updater.step2();
+				   }, 'text');
 	},
-
-	getUpdateLink: function() {
-		var link = source_link_template.replace(/%tag%/, 'master');
-		return $('<a id="update" href="' + link + '">переустановить</a>');
+	step2: function() {
+		console.log(this.installed);
+		console.log(this.available);
+		//menu_bar.append(this.getUpdateLink());
 	},
 
 	check: function() {
-		menu_bar.append(this.getUpdateLink());
+		var date = new Date;
+		var secs = date.getTime();
+		var diff = storage.diff(this.storage_key, secs);
+		if ( !diff || diff > this.interval) {
+			this.step1();
+		}
 	}
 };
 

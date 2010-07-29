@@ -12,6 +12,7 @@
 
 var version = 1;
 var script_link = 'http://userscripts.org/scripts/show/81101';
+var source_link = 'http://github.com/bazuuka/godville-ui/raw/master/godville-ui.user.js';
 
 // Style
 // TODO: вынести стиль в отдельный файл и подключить с помощью @resource
@@ -52,6 +53,44 @@ var timeout_bar = {
 		this.elem.css('width', '100%');
 		this.elem.animate({width: 0}, timeout * 1000, 'linear');
 	}
+};
+// ------------------------
+// UI Menu
+// ------------------------
+var menu_bar = {
+	reformalLink: $('<a id="reformal" href="http://godville-ui.reformal.ru/" target="about:blank">есть идеи?</a>'),
+	updateLink: $('<a id="update" href="' + source_link + '">переустановить</a>'),
+
+	create: function() {
+		$('#menu_bar').after(this.constructMenuBar());
+		$('#menu_bar ul').append( $('<li> | </li>').append(this.getToggleButton()));
+	},
+	append: function($obj) {
+		this.items.append( $('<li></li>').append($obj));
+	},
+	toggle: function() {
+		this.bar.toggle();
+		storage.set('ui_menu_visible', this.bar.is(':visible'));
+	},
+	constructMenuBar: function() {
+		this.items = $('<ul></ul>');
+		this.bar = $('<div id="ui_menu_bar"></div>').append(this.items);
+		this.bar.toggle(storage.get('ui_menu_visible') == 'true' || false);
+		//append basic elems
+		this.append($('<strong>Godville UI:</strong>'));
+		this.append(this.reformalLink);
+		this.append(this.updateLink);
+
+		return this.bar;
+	},
+
+	getToggleButton: function() {
+		return $('<a href="#"><strong>ui</strong></a>')
+			.click(function() {
+					   menu_bar.toggle();
+					   return false;
+				   });
+	},
 };
 
 // -----------------------
@@ -435,21 +474,17 @@ function improve() {
 }
 
 
-function getReformalLink() {
-	return $('<a id="reformal" href="http://godville-ui.reformal.ru/" target="about:blank">есть идеи?</a>');
-}
 
 // Main code
 $(function() {
 	  logger.create();
 	  timeout_bar.create();
+	  menu_bar.create();
 
 	  improve();
 	  // FIXME: this will repear all improve on all mouse movement
 	  // may be use less expensive event (live? handle ajax request?)
 	  // Insert referal widget
-	  $('#menu_bar ul').append( $('<li> | </li>').append(getReformalLink()) );
-
 	  $(document).bind("DOMNodeInserted", function () {
 						   if(!ImproveInProcess)
 							   setTimeout(improve, 1);

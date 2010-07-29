@@ -452,13 +452,13 @@ function improveEquip() {
 	// Save stats
 	var $box = $('#equipment_box');
 
-	stats.setFromStatsValue('equip1', $box, 'Оружие');
-	stats.setFromStatsValue('equip2', $box, 'Щит');
-	stats.setFromStatsValue('equip3', $box, 'Голова');
-	stats.setFromStatsValue('equip4', $box, 'Тело');
-	stats.setFromStatsValue('equip5', $box, 'Руки');
-	stats.setFromStatsValue('equip6', $box, 'Ноги');
-	stats.setFromStatsValue('equip7', $box, 'Талисман');
+	stats.setFromEquipCounter('equip1', $box, 'Оружие');
+	stats.setFromEquipCounter('equip2', $box, 'Щит');
+	stats.setFromEquipCounter('equip3', $box, 'Голова');
+	stats.setFromEquipCounter('equip4', $box, 'Тело');
+	stats.setFromEquipCounter('equip5', $box, 'Руки');
+	stats.setFromEquipCounter('equip6', $box, 'Ноги');
+	stats.setFromEquipCounter('equip7', $box, 'Талисман');
 }
 
 // -------------- Переписка ---------------------------

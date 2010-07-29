@@ -13,7 +13,7 @@
 var version = 1;
 var script_link = 'http://userscripts.org/scripts/show/81101';
 var version_link = 'http://github.com/bazuuka/godville-ui/raw/master/version';
-var source_link = 'http://github.com/bazuuka/godville-ui/raw/%tag%/godville-ui.user.js';
+var source_link_template = 'http://github.com/bazuuka/godville-ui/raw/%tag%/godville-ui.user.js';
 
 // Style
 // TODO: вынести стиль в отдельный файл и подключить с помощью @resource
@@ -60,7 +60,6 @@ var timeout_bar = {
 // ------------------------
 var menu_bar = {
 	reformalLink: $('<a id="reformal" href="http://godville-ui.reformal.ru/" target="about:blank">есть идеи?</a>'),
-	//updateLink: $('<a id="update" href="' + source_link + '">переустановить</a>'),
 
 	create: function() {
 		$('#menu_bar').after(this.constructMenuBar());
@@ -80,7 +79,6 @@ var menu_bar = {
 		//append basic elems
 		this.append($('<strong>Godville UI:</strong>'));
 		this.append(this.reformalLink);
-		//this.append(this.updateLink);
 
 		return this.bar;
 	},
@@ -283,7 +281,14 @@ var updater = {
 				   });
 	},
 
-	init: function() {
+	getUpdateLink: function() {
+		var link = source_link_template.replace(/%tag%/, 'master');
+		alert(link);
+		return $('<a id="update" href="' + link + '">переустановить</a>');
+	},
+
+	check: function() {
+		menu_bar.append(this.getUpdateLink());
 	}
 };
 

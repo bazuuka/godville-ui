@@ -174,7 +174,7 @@ var logger = {
 		$('#menu_bar').after(this.elem);
 	},
 
-	appendStr: function(id, str, descr) {
+	appendStr: function(id, klass, str, descr) {
 		// append separator if needed
 		if (this.need_separator) {
 			this.need_separator = false;
@@ -183,7 +183,7 @@ var logger = {
 			}
 		}
 		// apend string
-		this.elem.append('<li class="' + id + '" title="' + descr + '">' + str + '</li>');
+		this.elem.append('<li class="' + klass + '" title="' + descr + '">' + str + '</li>');
 		this.elem.scrollLeft(10000000); //Dirty fix
 	},
 
@@ -195,7 +195,7 @@ var logger = {
 			diff = Math.round(diff * 1000) / 1000;
 			s = (diff < 0)? diff : '+' + diff;
 
-			this.appendStr(id, name  + s, descr);
+			this.appendStr(id, klass, name  + s, descr);
 		}
 	},
 
@@ -211,13 +211,13 @@ var logger = {
 		this.watchStatsValue('monster', 'mns', 'Монстры');
  		this.watchStatsValue('death', 'death', 'Смерти');
  		this.watchStatsValue('brick', 'br', 'Кирпичи');
-		this.watchStatsValue('equip1', 'eq1', 'Оружие');
-		this.watchStatsValue('equip2', 'eq2', 'Щит');
-		this.watchStatsValue('equip3', 'eq3', 'Голова');
-		this.watchStatsValue('equip4', 'eq4', 'Тело');
-		this.watchStatsValue('equip5', 'eq5', 'Руки');
-		this.watchStatsValue('equip6', 'eq6', 'Ноги');
-		this.watchStatsValue('equip7', 'eq7', 'Талисман');
+		this.watchStatsValue('equip1', 'eq1', 'Оружие', 'equip');
+		this.watchStatsValue('equip2', 'eq2', 'Щит', 'equip');
+		this.watchStatsValue('equip3', 'eq3', 'Голова', 'equip');
+		this.watchStatsValue('equip4', 'eq4', 'Тело', 'equip');
+		this.watchStatsValue('equip5', 'eq5', 'Руки', 'equip');
+		this.watchStatsValue('equip6', 'eq6', 'Ноги', 'equip');
+		this.watchStatsValue('equip7', 'eq7', 'Талисман', 'equip');
 	}
 };
 

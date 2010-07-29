@@ -4,19 +4,18 @@
 // @description    Some improvements for godville ui
 // @include        http://godville.net/hero*
 // @require        http://mesak-project.googlecode.com/files/jquery.142.gm.js
-// @resource       Words http://github.com/bazuuka/godville-ui/raw/master/phrases.json
-// @resource       Style http://github.com/bazuuka/godville-ui/raw/master/godville-ui.css
-// @resource       Version http://github.com/bazuuka/godville-ui/raw/master/version
+// @resource       Words http://github.com/bazuuka/godville-ui/raw/v8.0/phrases.json
+// @resource       Style http://github.com/bazuuka/godville-ui/raw/v8.0/godville-ui.css
+// @resource       Version http://github.com/bazuuka/godville-ui/raw/v8.0/version
 // @license        GNU General Public License v3
 // ==/UserScript==
 
 var version = 1;
 var script_link = 'http://userscripts.org/scripts/show/81101';
-var version_link = 'http://github.com/bazuuka/godville-ui/raw/master/version';
+var latest_version_link = 'http://github.com/bazuuka/godville-ui/raw/master/version';
 var source_link_template = 'http://github.com/bazuuka/godville-ui/raw/%tag%/godville-ui.user.js';
 
 // Style
-// TODO: вынести стиль в отдельный файл и подключить с помощью @resource
 GM_addStyle( GM_getResourceText('Style') );
 
 //  --- All words from phrases.json ---
@@ -72,6 +71,9 @@ var menu_bar = {
 		this.bar.toggle();
 		storage.set('ui_menu_visible', this.bar.is(':visible'));
 	},
+	show: function() {
+		this.bar.show();
+	},
 	constructMenuBar: function() {
 		this.items = $('<ul></ul>');
 		this.bar = $('<div id="ui_menu_bar"></div>').append(this.items);
@@ -79,7 +81,6 @@ var menu_bar = {
 		//append basic elems
 		this.append($('<strong>Godville UI:</strong>'));
 		this.append(this.reformalLink);
-
 		return this.bar;
 	},
 
@@ -275,36 +276,48 @@ var logger = {
 // Updater
 // ------------------------------------
 var updater = {
-	storage_key: 'update_timer',
-	installed: '',
-	avaliable: '',
-	//interval: 60 * 60,  // every hour
-	interval: 5,
+	interval: 60 * 60 * 1000,  // every hour
+	//interval: 5 // every reload
 
+	queryVersion: function() {
+		// jQuery.ajax не работает, потому что ссылка version_link
+		// указывает на другой домен. Защита ...
+		GM_xmlhttpRequest(
+			{
+				method:"GET",
+				url:latest_version_link,
+				onload:function(details) {
+					var data = details.responseText;
+					storage.set('updater_available', data);
+					updater.insertLink();
+				}
+			});
+	},
 	getUpdateLink: function(label, version) {
-		var link = source_link_template.replace(/%tag%/, 'v' + tag);
+		var link = source_link_template.replace(/%tag%/, 'v' + version);
 		return $('<a id="update" href="' + link + '">' + label + '</a>');
 	},
+	insertLink: function() {
+		var installed = GM_getResourceText('Version');
+		var available = storage.get('updater_available');
 
-	step1: function() {
-		this.installed = GM_getResourceText('Version');
-		jQuery.get(version_link, function(data) {
-					   updater.available = data;
-					   updater.step2();
-				   }, 'text');
+		if (installed != available) {
+			menu_bar.append(this.getUpdateLink('<strong>обновить</strong>', available));
+			menu_bar.show();
+		} else {
+			menu_bar.append(this.getUpdateLink('переустановить', installed));
+		}
 	},
-	step2: function() {
-		console.log(this.installed);
-		console.log(this.available);
-		//menu_bar.append(this.getUpdateLink());
-	},
-
 	check: function() {
+		var timer_key = 'update_timer';
 		var date = new Date;
 		var secs = date.getTime();
-		var diff = storage.diff(this.storage_key, secs);
+		var diff = storage.diff(timer_key, secs);
 		if ( !diff || diff > this.interval) {
-			this.step1();
+			storage.set(timer_key, secs);
+			this.queryVersion();
+		} else {
+			this.insertLink();
 		}
 	}
 };
@@ -521,16 +534,15 @@ $(function() {
 	  logger.create();
 	  timeout_bar.create();
 	  menu_bar.create();
+	  updater.check();
 
 	  improve();
-	  // FIXME: this will repear all improve on all mouse movement
-	  // may be use less expensive event (live? handle ajax request?)
-	  // Insert referal widget
+
+	  // event listeners
 	  $(document).bind("DOMNodeInserted", function () {
 						   if(!ImproveInProcess)
 							   setTimeout(improve, 1);
 					   });
 	  $('body').hover( function() { logger.update(); } );
 
-	  updater.check();
 });

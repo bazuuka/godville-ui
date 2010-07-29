@@ -81,6 +81,7 @@ var menu_bar = {
 		//append basic elems
 		this.append($('<strong>Godville UI:</strong>'));
 		this.append(this.reformalLink);
+		this.append(this.getDumpButton());
 		return this.bar;
 	},
 
@@ -89,6 +90,12 @@ var menu_bar = {
 			.click(function() {
 					   menu_bar.toggle();
 					   return false;
+				   });
+	},
+	getDumpButton: function() {
+		return $('<a href="#">dump</a>')
+			.click(function() {
+					   storage.dump();
 				   });
 	},
 };
@@ -118,6 +125,13 @@ var storage = {
 		var diff = this.diff(id, value);
 		this.set(id, value);
 		return diff;
+	},
+	dump: function() {
+		var lines = new Array;
+		for each (val in GM_listValues().sort()) {
+			lines.push(val + ' = ' + GM_getValue(val, 'UNDEF'));
+		}
+		GM_log("Storage:\n" + lines.join("\n"));
 	}
 };
 

@@ -283,7 +283,6 @@ var updater = {
 
 	getUpdateLink: function() {
 		var link = source_link_template.replace(/%tag%/, 'master');
-		alert(link);
 		return $('<a id="update" href="' + link + '">переустановить</a>');
 	},
 

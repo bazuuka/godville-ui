@@ -360,7 +360,23 @@ function improveEquip() {
 	logger.watchEquipCounter('equip5', 'eq5', 'Руки',      $box, 'Снаряжение на руки');
 	logger.watchEquipCounter('equip6', 'eq6', 'Ноги',      $box, 'Снаряжение на ноги');
 	logger.watchEquipCounter('equip7', 'eq7', 'Талисман',  $box, 'Талисман');
-	console.log(GM_listValues());
+}
+
+// -------------- Переписка ---------------------------
+
+function improveMailbox() {
+	if (isAlreadyImproved( $('#recent_friends') )) return;
+
+	// Ссылки на информацию о боге по средней кнопке мыши
+	$('#recent_friends .new_line a')
+		.each(function(ind, obj) {
+				  if (obj.innerHTML == 'показать всех знакомых'
+					  || obj.innerHTML.substring(0, 20) == 'скрыть всех знакомых') {
+					  return;
+				  }
+				  obj.href = "http://godville.net/gods/"+obj.innerHTML;
+			  });
+
 }
 
 // -------- do all improvements ----------
@@ -374,6 +390,7 @@ function improve() {
 		improveStats();
 		improveFieldBox();
 		improveEquip();
+		improveMailbox();
 	} catch (x) {
 		GM_log(x);
 	} finally {

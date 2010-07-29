@@ -1,18 +1,19 @@
 // ==UserScript==
 // @name           godville-ui
-// @version        7.7
 // @namespace      http://godville.net/userscripts
 // @description    Some improvements for godville ui
 // @include        http://godville.net/hero*
 // @require        http://mesak-project.googlecode.com/files/jquery.142.gm.js
 // @resource       Words http://github.com/bazuuka/godville-ui/raw/master/phrases.json
 // @resource       Style http://github.com/bazuuka/godville-ui/raw/master/godville-ui.css
+// @resource       Version http://github.com/bazuuka/godville-ui/raw/master/version
 // @license        GNU General Public License v3
 // ==/UserScript==
 
 var version = 1;
 var script_link = 'http://userscripts.org/scripts/show/81101';
-var source_link = 'http://github.com/bazuuka/godville-ui/raw/master/godville-ui.user.js';
+var version_link = 'http://github.com/bazuuka/godville-ui/raw/master/version';
+var source_link = 'http://github.com/bazuuka/godville-ui/raw/%tag%/godville-ui.user.js';
 
 // Style
 // TODO: вынести стиль в отдельный файл и подключить с помощью @resource
@@ -59,7 +60,7 @@ var timeout_bar = {
 // ------------------------
 var menu_bar = {
 	reformalLink: $('<a id="reformal" href="http://godville-ui.reformal.ru/" target="about:blank">есть идеи?</a>'),
-	updateLink: $('<a id="update" href="' + source_link + '">переустановить</a>'),
+	//updateLink: $('<a id="update" href="' + source_link + '">переустановить</a>'),
 
 	create: function() {
 		$('#menu_bar').after(this.constructMenuBar());
@@ -79,7 +80,7 @@ var menu_bar = {
 		//append basic elems
 		this.append($('<strong>Godville UI:</strong>'));
 		this.append(this.reformalLink);
-		this.append(this.updateLink);
+		//this.append(this.updateLink);
 
 		return this.bar;
 	},
@@ -265,6 +266,24 @@ var logger = {
 		this.watchStatsValue('equip5', 'eq5', 'Руки', 'equip');
 		this.watchStatsValue('equip6', 'eq6', 'Ноги', 'equip');
 		this.watchStatsValue('equip7', 'eq7', 'Талисман', 'equip');
+	}
+};
+
+// ------------------------------------
+// Updater
+// ------------------------------------
+var updater = {
+	get_installed: function() {
+		this.installed = GM_getResourceText('Version');
+	},
+
+	get_available: function() {
+		jQuery.get(source_link, function(data) {
+					   updater.available = data;
+				   });
+	},
+
+	init: function() {
 	}
 };
 
@@ -491,4 +510,5 @@ $(function() {
 					   });
 	  $('body').hover( function() { logger.update(); } );
 
+	  updater.check();
 });

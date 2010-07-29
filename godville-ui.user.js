@@ -143,7 +143,15 @@ var stats = {
 		return storage.set('stats_' + key, value);
 	},
 	setFromProgressBar: function(id, $elem) {
-		this.set(id, 100 - $elem.css('width').replace(/%/, ''));
+		value = 100 - $elem.css('width').replace(/%/, '');
+		// Workaround for bug with decreasing 'exp'
+		old_value = this.get(id);
+		if (old_value) {
+			var diff = value - old_value;
+			if (diff < 0 && diff > -1)
+				return old_value;
+		}
+		return this.set(id, value);
 	},
 	setFromLabelCounter: function(id, $container, label, parser) {
 		parser = parser || parseInt;

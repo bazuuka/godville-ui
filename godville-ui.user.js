@@ -133,6 +133,34 @@ function addSayPhraseAfterLabel($base_elem, label_name, btn_name, section) {
 }
 
 // ------------------------
+// Stats storage
+// ------------------------
+var stats = {
+	get: function(key) {
+		return storage.get('stats_' + key);
+	},
+	set: function(key, value) {
+		return storage.set('stats_' + key, value);
+	},
+	setFromProgressBar: function(id, $elem) {
+		this.set(id, 100 - $elem.css('width').replace(/%/, ''));
+	},
+	setFromLabelCounter: function(id, $container, label, parser) {
+		parser = parser || parseInt;
+		var $label = findLabel($container, label);
+		var $field = $label.nextAll('.field_content').first();
+		var value = parser($field.text());
+		this.set(id, value);
+	},
+	setFromEquipCounter: function(id, $container, label) {
+		var $label = findLabel($container, label);
+		var $field = $label.nextAll('.equip_content').first();
+		var value = $field.text().replace(/.*([+-][0-9]+)/, "$1");
+		this.set(id, parseInt(value));
+	}
+}
+
+// ------------------------
 // Oneline logger
 // ------------------------
 // logger.create -- создать объект
@@ -159,12 +187,9 @@ var logger = {
 		this.elem.scrollLeft(10000000); //Dirty fix
 	},
 
-	needSeparatorHere: function() {
-		this.need_separator = true;
-	},
-
-	watchValue: function(id, name, descr, value) {
-		var diff = storage.set_with_diff('logger_param_' + id, value);
+	watchStatsValue: function(id, name, descr, klass) {
+		klass = klass || id;
+		var diff = storage.set_with_diff('logger_param_' + id, stats.get(id));
 		if(diff) {
 			// Округление и добавление плюсика
 			diff = Math.round(diff * 1000) / 1000;
@@ -174,23 +199,25 @@ var logger = {
 		}
 	},
 
-	watchProgressBar: function(id, name, descr, $elem) {
-		this.watchValue(id, name, descr, 100 - $elem.css('width').replace(/%/, ''));
-	},
-
-	watchLabelCounter: function(id, name, descr, $container, label, parser) {
-		parser = parser || parseInt;
-		var $label = findLabel($container, label);
-		var $field = $label.nextAll('.field_content').first();
-		var value = parser($field.text());
-		this.watchValue(id, name, descr, value);
-	},
-
-	watchEquipCounter: function(id, name, descr, $container, label) {
-		var $label = findLabel($container, label);
-		var $field = $label.nextAll('.equip_content').first();
-		var value = $field.text().replace(/.*([+-][0-9]+)/, "$1");
-		this.watchValue(id, name, descr, parseInt(value));
+	update: function() {
+		this.need_separator = true;
+		this.watchStatsValue('prana', 'pr', 'Прана (проценты)');
+		this.watchStatsValue('exp', 'exp', 'Опыт (проценты)');
+		this.watchStatsValue('task', 'tsk', 'Задание (проценты)');
+		this.watchStatsValue('level', 'lvl', 'Уровень');
+		this.watchStatsValue('inv', 'inv', 'Инвентарь');
+		this.watchStatsValue('heal', 'hp', 'Здоровье');
+		this.watchStatsValue('gold', 'gld', 'Золото');
+		this.watchStatsValue('monster', 'mns', 'Монстры');
+ 		this.watchStatsValue('death', 'death', 'Смерти');
+ 		this.watchStatsValue('brick', 'br', 'Кирпичи');
+		this.watchStatsValue('equip1', 'eq1', 'Оружие');
+		this.watchStatsValue('equip2', 'eq2', 'Щит');
+		this.watchStatsValue('equip3', 'eq3', 'Голова');
+		this.watchStatsValue('equip4', 'eq4', 'Тело');
+		this.watchStatsValue('equip5', 'eq5', 'Руки');
+		this.watchStatsValue('equip6', 'eq6', 'Ноги');
+		this.watchStatsValue('equip7', 'eq7', 'Талисман');
 	}
 };
 
@@ -300,7 +327,8 @@ function improveSayDialog() {
 		$('#god_phrase_btn').click(function () {timeout_bar.start(); return true;});
 	}
 
-	logger.watchLabelCounter('prana', 'pr', 'Прана (проценты)',  $box, 'Прана');
+	// Save stats
+	stats.setFromLabelCounter('prana', $box, 'Прана');
 }
 
 // ----------- Вести с полей ----------------
@@ -329,20 +357,21 @@ function improveStats() {
 	//addSayPhraseAfterLabel($box, 'Смертей', 'ещё', 'die');
 	addSayPhraseAfterLabel($box, 'Столбов от столицы', 'дом', 'town');
 
+	// Save stats
 	// Парсер строки с золотом
 	var gold_parser = function(val) {
 		return parseInt(val.replace(/[^0-9]/g, ''));
 	};
 
-	logger.watchProgressBar('exp', 'exp', 'Опыт (проценты)',  $('#pr3'));
-	logger.watchProgressBar('task', 'tsk', 'Задание (проценты)',  $('#pr4'));
-	logger.watchLabelCounter('level', 'lvl', 'Уровень',  $box, 'Уровень');
-	logger.watchLabelCounter('inv', 'inv', 'Инвентарь',  $box, 'Инвентарь');
-	logger.watchLabelCounter('heal', 'hp', 'Здоровье',  $box, 'Здоровье');
-	logger.watchLabelCounter('gold', 'gld', 'Золото',  $box, 'Золота', gold_parser);
-	logger.watchLabelCounter('monster', 'mns', 'Монстры',  $box, 'Убито монстров');
- 	logger.watchLabelCounter('death', 'death', 'Смерти',  $box, 'Смертей');
- 	logger.watchLabelCounter('brick', 'br', 'Кирпичи',  $box, 'Кирпичей для храма', parseFloat);
+	stats.setFromProgressBar('exp', $('#pr3'));
+	stats.setFromProgressBar('task', $('#pr4'));
+	stats.setFromLabelCounter('level', $box, 'Уровень');
+	stats.setFromLabelCounter('inv', $box, 'Инвентарь');
+	stats.setFromLabelCounter('heal', $box, 'Здоровье');
+	stats.setFromLabelCounter('gold', $box, 'Золота', gold_parser);
+	stats.setFromLabelCounter('monster', $box, 'Убито монстров');
+ 	stats.setFromLabelCounter('death', $box, 'Смертей');
+ 	stats.setFromLabelCounter('brick', $box, 'Кирпичей для храма', parseFloat);
 }
 
 // ---------- Equipment --------------
@@ -350,16 +379,16 @@ function improveStats() {
 function improveEquip() {
 	if (isAlreadyImproved( $('#equipment_box') )) return;
 
-	// Add links
+	// Save stats
 	var $box = $('#equipment_box');
 
-	logger.watchEquipCounter('equip1', 'eq1', 'Оружие',    $box, 'Оружие');
-	logger.watchEquipCounter('equip2', 'eq2', 'Щит',       $box, 'Щит');
-	logger.watchEquipCounter('equip3', 'eq3', 'Голова',    $box, 'Снаряжение на голову');
-	logger.watchEquipCounter('equip4', 'eq4', 'Тело',      $box, 'Снаряжение на тело');
-	logger.watchEquipCounter('equip5', 'eq5', 'Руки',      $box, 'Снаряжение на руки');
-	logger.watchEquipCounter('equip6', 'eq6', 'Ноги',      $box, 'Снаряжение на ноги');
-	logger.watchEquipCounter('equip7', 'eq7', 'Талисман',  $box, 'Талисман');
+	stats.setFromStatsValue('equip1', $box, 'Оружие');
+	stats.setFromStatsValue('equip2', $box, 'Щит');
+	stats.setFromStatsValue('equip3', $box, 'Голова');
+	stats.setFromStatsValue('equip4', $box, 'Тело');
+	stats.setFromStatsValue('equip5', $box, 'Руки');
+	stats.setFromStatsValue('equip6', $box, 'Ноги');
+	stats.setFromStatsValue('equip7', $box, 'Талисман');
 }
 
 // -------------- Переписка ---------------------------
@@ -384,7 +413,6 @@ var ImproveInProcess = false;
 function improve() {
 	ImproveInProcess = true;
 	try {
-		logger.needSeparatorHere();
 		improveLoot();
 		improveSayDialog();
 		improveStats();
@@ -414,10 +442,10 @@ $(function() {
 	  // Insert referal widget
 	  $('#menu_bar ul').append( $('<li> | </li>').append(getReformalLink()) );
 
-	  //$('body').hover( function() { improve(); } );
 	  $(document).bind("DOMNodeInserted", function () {
 						   if(!ImproveInProcess)
 							   setTimeout(improve, 1);
 					   });
+	  $('body').hover( function() { logger.update(); } );
 
 });

@@ -15,6 +15,9 @@ var script_link = 'http://userscripts.org/scripts/show/81101';
 var latest_version_link = 'http://github.com/bazuuka/godville-ui/raw/master/version';
 var source_link_template = 'http://github.com/bazuuka/godville-ui/raw/%tag%/godville-ui.user.js';
 
+var god_name = $('#menu_top').text().replace(/Приветствуем, о (.+)\!/, '$1' );
+var developers = ['Neniu'];
+
 // Style
 GM_addStyle( GM_getResourceText('Style') );
 
@@ -81,7 +84,9 @@ var menu_bar = {
 		//append basic elems
 		this.append($('<strong>Godville UI:</strong>'));
 		this.append(this.reformalLink);
-		this.append(this.getDumpButton());
+		if (is_developer()) {
+			this.append(this.getDumpButton());
+		}
 		return this.bar;
 	},
 
@@ -93,7 +98,7 @@ var menu_bar = {
 				   });
 	},
 	getDumpButton: function() {
-		return $('<a href="#">dump</a>')
+		return $('<a href="#" class="devel_link">dump</a>')
 			.click(function() {
 					   storage.dump();
 				   });
@@ -107,11 +112,14 @@ var menu_bar = {
 // storage.get -- read value
 // storage.set_with_diff -- store value and get diff with old
 var storage = {
+	_get_key: function(key) {
+		return god_name + ':' + key;
+	},
 	set: function(id, value) {
-		GM_setValue(id, "" + value);
+		GM_setValue(this._get_key(id), "" + value);
 	},
 	get: function(id) {
-		return GM_getValue(id, null);
+		return GM_getValue(this._get_key(id), null);
 	},
 	diff: function(id, value) {
 		var diff = null;
@@ -138,6 +146,10 @@ var storage = {
 // ------------------------
 //      HELPERS
 // ------------------------
+// Dump
+function is_developer() {
+	return developers.indexOf(god_name) >= 0;
+}
 
 // Чтение массива
 function get_random_item(arr) {

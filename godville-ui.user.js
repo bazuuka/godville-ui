@@ -40,6 +40,51 @@ if (words['version'] > version) {
 }
 
 // ------------------------
+//      HELPERS
+// ------------------------
+// Dump
+function is_developer() {
+	return developers.indexOf(god_name) >= 0;
+}
+// Базовый алгоритм произнесения фразы
+function sayToHero(phrase) {
+	$('#aog_hint_label').hide();
+	$('#god_phrase').val(phrase);
+}
+// Checks if $elem already improved
+function isAlreadyImproved($elem) {
+	if ($elem.hasClass('improved')) return true;
+	$elem.addClass('improved');
+	return false
+}
+
+function findLabel($base_elem, label_name) {
+	return $('.l_capt', $base_elem).filter(function(index){
+			return $(this).text() == label_name;
+		});
+}
+// Search for label with given name and appends after it
+// given elem
+function addAfterLabel($base_elem, label_name, $elem) {
+	findLabel($base_elem, label_name).after($elem.addClass('label-appended'));
+}
+// Generic say button
+function getGenSayButton(title, array) {
+	return $('<a href="#">' + title + '</a>')
+		.click(function() {
+			sayToHero(get_random_item(array));
+			return false;
+		});
+}
+// Хелпер объединяет addAfterLabel и getGenSayButton
+// + берет фразы из words['phrases']
+function addSayPhraseAfterLabel($base_elem, label_name, btn_name, section) {
+	var arr = words['phrases'][section];
+	addAfterLabel($base_elem, label_name, getGenSayButton(btn_name, arr));
+}
+
+
+// ------------------------
 // Timeout bar
 // -----------------------
 // timeout_bar.create -- создать объект
@@ -143,13 +188,6 @@ var storage = {
 	}
 };
 
-// ------------------------
-//      HELPERS
-// ------------------------
-// Dump
-function is_developer() {
-	return developers.indexOf(god_name) >= 0;
-}
 
 // Чтение массива
 function get_random_item(arr) {
@@ -158,47 +196,6 @@ function get_random_item(arr) {
 // Случайная фраза в разделе 'sect'
 function get_random_phrase(sect) {
 	return get_random_item( words['phrases'][sect] );
-}
-
-// Базовый алгоритм произнесения фразы
-function sayToHero(phrase) {
-	$('#aog_hint_label').hide();
-	$('#god_phrase').val(phrase);
-}
-
-// Checks if $elem already improved
-function isAlreadyImproved($elem) {
-	if ($elem.hasClass('improved')) return true;
-	$elem.addClass('improved');
-	return false
-}
-
-function findLabel($base_elem, label_name) {
-	return $('.l_capt', $base_elem).filter(function(index){
-			return $(this).text() == label_name;
-		});
-}
-
-// Search for label with given name and appends after it
-// given elem
-function addAfterLabel($base_elem, label_name, $elem) {
-	findLabel($base_elem, label_name).after($elem.addClass('label-appended'));
-}
-
-// Generic say button
-function getGenSayButton(title, array) {
-	return $('<a href="#">' + title + '</a>')
-		.click(function() {
-			sayToHero(get_random_item(array));
-			return false;
-		});
-}
-
-// Хелпер объединяет addAfterLabel и getGenSayButton
-// + берет фразы из words['phrases']
-function addSayPhraseAfterLabel($base_elem, label_name, btn_name, section) {
-	var arr = words['phrases'][section];
-	addAfterLabel($base_elem, label_name, getGenSayButton(btn_name, arr));
 }
 
 // ------------------------

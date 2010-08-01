@@ -21,24 +21,6 @@ var developers = ['Neniu'];
 // Style
 GM_addStyle( GM_getResourceText('Style') );
 
-//  --- All words from phrases.json ---
-
-// JSON.parse не поддерживает комментарии в JSON. Whyyyyy ???
-// пришлось использовать небезопасный eval.
-// TODO: JSON.minify? yaml? -- и для того и другого нужна еще одна библиотечка
-var words = eval('(' + GM_getResourceText('Words') + ')');
-
-// Проверка версии
-if (words['version'] > version) {
-	alert("Внимание! Вы используете новый phrases.json со старым скриптом!\n\n"
-		  + ' - попробуйте обновить скрипт: ' + script_link + "\n"
-		  + '(предварительно сохраните новый phrases.json, не зря же вы его вручную ставили)');
-} else if (words['version'] < version) {
-	alert("Внимание! Вы используете старый phrases.json с новым скриптом\n\n"
-		  + " - попробуйте переустановить скрипт: " + script_link + "\n"
-		  + " - или, если Вы изменяли phrases.json, и сейчас используете его, вручную найти что изменилось и поправить");
-}
-
 // ------------------------
 //      HELPERS
 // ------------------------
@@ -69,20 +51,34 @@ function addAfterLabel($base_elem, label_name, $elem) {
 	findLabel($base_elem, label_name).after($elem.addClass('label-appended'));
 }
 // Generic say button
-function getGenSayButton(title, array) {
+function getGenSayButton(title, section) {
 	return $('<a href="#">' + title + '</a>')
 		.click(function() {
-			sayToHero(get_random_item(array));
+			sayToHero(words.longPhrase(section));
 			return false;
 		});
 }
 // Хелпер объединяет addAfterLabel и getGenSayButton
 // + берет фразы из words['phrases']
 function addSayPhraseAfterLabel($base_elem, label_name, btn_name, section) {
-	var arr = words['phrases'][section];
-	addAfterLabel($base_elem, label_name, getGenSayButton(btn_name, arr));
+	addAfterLabel($base_elem, label_name, getGenSayButton(btn_name, section));
 }
 
+// Случайный индекс в массиве
+function getRandomIndex(arr) {
+	return Math.floor ( Math.random() * arr.length );
+}
+// Случайный элемент массива
+function getRandomItem(arr) {
+	return arr[getRandomIndex(arr)];
+}
+// Вытаскивает случайный элемент из массива
+function popRandomItem(arr) {
+	var ind = getRandomIndex(arr);
+	var res = arr[ind];
+	arr.splice(ind, 1);
+	return res;
+}
 
 // ------------------------
 // Timeout bar
@@ -188,15 +184,61 @@ var storage = {
 	}
 };
 
+var words = {
+	init: function() {
+		// JSON.parse не поддерживает комментарии в JSON. Whyyyyy ???
+		// пришлось использовать небезопасный eval.
+		// TODO: JSON.minify? yaml? -- и для того и другого нужна еще одна библиотечка
+		this.base = eval('(' + GM_getResourceText('Words') + ')');
+		this.version = this.base['version'];
 
-// Чтение массива
-function get_random_item(arr) {
-	return arr[Math.floor ( Math.random() * arr.length )];
-}
-// Случайная фраза в разделе 'sect'
-function get_random_phrase(sect) {
-	return get_random_item( words['phrases'][sect] );
-}
+		// Проверка версии
+		if (this.version > version) {
+			alert("Внимание! Вы используете новый phrases.json со старым скриптом!\n\n"
+				  + ' - попробуйте обновить скрипт: ' + script_link + "\n"
+				  + '(предварительно сохраните новый phrases.json, не зря же вы его вручную ставили)');
+		} else if (this.version < version) {
+			alert("Внимание! Вы используете старый phrases.json с новым скриптом\n\n"
+				  + " - попробуйте переустановить скрипт: " + script_link + "\n"
+				  + " - или, если Вы изменяли phrases.json, и сейчас используете его, вручную найти что изменилось и поправить");
+		}
+	},
+
+	// Phrase gen
+	randomPhrase: function(sect) {
+		return getRandomItem(this.base['phrases'][sect]);
+	},
+	longPhrase: function(sect, len) {
+		phrases = this._longPhrase_recursion(this.base['phrases'][sect].slice(), len || 78);
+		console.log(phrases);
+		return phrases.join(' ');
+	},
+	inspectPhrase: function(item_name) {
+		return this.randomPhrase('inspect_prefix') + ' "' + item_name + '"';
+	},
+
+	// Checkers
+	isHealItem: function(item_name) {
+		return this.base['items']['heal'].indexOf(item_name) >= 0;
+	},
+	canBeActivated: function($obj) {
+		return $obj.text().match(/\(\@\)/);
+	},
+
+	// Private (или типа того)
+	_longPhrase_recursion: function(source, len) {
+		while (source.length) {
+			var next = popRandomItem(source);
+			var remainder = len - next.length - 2; // 2 for ', '
+			if ( remainder > 0) {
+				var res = [next].concat(this._longPhrase_recursion(source, remainder));
+				console.log(res);
+				return res;
+			}
+		}
+		return [];
+	},
+};
 
 // ------------------------
 // Stats storage
@@ -232,7 +274,7 @@ var stats = {
 		var value = $field.text().replace(/.*([+-][0-9]+)/, "$1");
 		this.set(id, parseInt(value));
 	}
-}
+};
 
 // ------------------------
 // Oneline logger
@@ -350,17 +392,6 @@ var updater = {
 // ------------------------------------
 
 // -------- Hero Loot -----------------
-function getInspectQueryText(item_name) {
-	return get_random_phrase('inspect_prefix') + ' "' + item_name + '"';
-}
-
-function isHealItem(item_name) {
-	return words['items']['heal'].indexOf(item_name) >= 0;
-}
-
-function canBeActivated($obj) {
-	return $obj.text().match(/\(\@\)/);
-}
 
 // Main button creater
 function improveLoot() {
@@ -369,7 +400,7 @@ function improveLoot() {
 	function createInspectButton(item_name) {
 		return $('<a href="#">?</a>')
 			.click(function(){
-				sayToHero(getInspectQueryText(item_name));
+				sayToHero(words.inspectPhrase(item_name));
 				return false;
 			});
 	}
@@ -379,9 +410,9 @@ function improveLoot() {
 		var $obj = $(obj);
 		var item_name = $('span', $obj).text().replace(/^\s+|\s+$/g, '');
 		// color items, and add buttons
-		if (isHealItem(item_name)) {
+		if (words.isHealItem(item_name)) {
 			$obj.css('color', 'green');
-		} else if (canBeActivated($obj)) {
+		} else if (words.canBeActivated($obj)) {
 			// Ничего не делать на активируемые вещи
 		} else {
 			$obj.append(createInspectButton(item_name));
@@ -407,7 +438,7 @@ function generateArenaPhrase() {
 	for (i in keys) {
 		var key = keys[i];
 		if ($('#say_' + key).is(':checked')) {
-			parts.push(get_random_phrase(key));
+			parts.push(words.randomPhrase(key));
 		}
 	}
 	// TODO: shuffle parts
@@ -554,6 +585,7 @@ function improve() {
 
 // Main code
 $(function() {
+	  words.init();
 	  logger.create();
 	  timeout_bar.create();
 	  menu_bar.create();

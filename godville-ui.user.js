@@ -4,9 +4,9 @@
 // @description    Some improvements for godville ui
 // @include        http://godville.net/hero*
 // @require        http://mesak-project.googlecode.com/files/jquery.142.gm.js
-// @resource       Words http://github.com/bazuuka/godville-ui/raw/v9/phrases.json
-// @resource       Style http://github.com/bazuuka/godville-ui/raw/v9./godville-ui.css
-// @resource       Version http://github.com/bazuuka/godville-ui/raw/v9/version
+// @resource       Words http://github.com/bazuuka/godville-ui/raw/v10/phrases.json
+// @resource       Style http://github.com/bazuuka/godville-ui/raw/v10/godville-ui.css
+// @resource       Version http://github.com/bazuuka/godville-ui/raw/v10/version
 // @license        GNU General Public License v3
 // ==/UserScript==
 

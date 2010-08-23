@@ -158,6 +158,7 @@ var storage = {
 	},
 	set: function(id, value) {
 		GM_setValue(this._get_key(id), "" + value);
+		return value;
 	},
 	get: function(id) {
 		return GM_getValue(this._get_key(id), null);
@@ -266,13 +267,15 @@ var stats = {
 		var $label = findLabel($container, label);
 		var $field = $label.nextAll('.field_content').first();
 		var value = parser($field.text());
-		this.set(id, value);
+
+		return this.set(id, value);
 	},
 	setFromEquipCounter: function(id, $container, label) {
 		var $label = findLabel($container, label);
 		var $field = $label.nextAll('.equip_content').first();
 		var value = $field.text().replace(/.*([+-][0-9]+)/, "$1");
-		this.set(id, parseInt(value));
+
+		return this.set(id, parseInt(value));
 	}
 };
 
@@ -406,16 +409,15 @@ var informer = {
 			if (flag in this.flags)
 				delete this.flags[flag];
 		}
-		this.tick();
+		if (!this.tref)
+			this.tick();
 	},
 	// убирает оповещение о событии
 	down: function(flag) {
 		this.flags[flag] = false;
 	},
+	// PRIVATE
 	tick: function() {
-		if (this.tref)
-			clearTimeout(this.tref);
-
 		// пройти по всем флагам и выбрать те, которые надо показывать
 		var to_show = [];
 		for (flag in this.flags) {
@@ -433,14 +435,15 @@ var informer = {
 			this.tref = undefined;
 		}
 	},
+
 	clear_title: function() {
 		document.title = 'gv: ' + god_name;
 	},
 	update_title: function(arr) {
 		this.odd_tick = ! this.odd_tick;
 
-		var msg = arr.join('! ');
-		msg = (this.odd_tick? '--- ' : '*** ') + msg;
+		var sep = (this.odd_tick? '...' : '!!!');
+		var msg = sep + ' ' + arr.join('! ') + ' ' + sep;
 		document.title = msg;
 	}
 };
@@ -543,7 +546,9 @@ function improveSayDialog() {
 	}
 
 	// Save stats
-	stats.setFromLabelCounter('prana', $box, 'Прана');
+	var prana = stats.setFromLabelCounter('prana', $box, 'Прана');
+
+	informer.update('pr = 100', prana == 100);
 }
 
 // ----------- Вести с полей ----------------
@@ -582,11 +587,14 @@ function improveStats() {
 	stats.setFromProgressBar('task', $('#pr4'));
 	stats.setFromLabelCounter('level', $box, 'Уровень');
 	stats.setFromLabelCounter('inv', $box, 'Инвентарь');
-	stats.setFromLabelCounter('heal', $box, 'Здоровье');
-	stats.setFromLabelCounter('gold', $box, 'Золота', gold_parser);
+	var heal  = stats.setFromLabelCounter('heal', $box, 'Здоровье');
+	var gld   = stats.setFromLabelCounter('gold', $box, 'Золота', gold_parser);
 	stats.setFromLabelCounter('monster', $box, 'Убито монстров');
  	stats.setFromLabelCounter('death', $box, 'Смертей');
  	stats.setFromLabelCounter('brick', $box, 'Кирпичей для храма', parseFloat);
+
+	informer.update('gld > 3k', gld >= 3000);
+	informer.update('dead', heal == 0);
 }
 
 // ---------- Equipment --------------
@@ -634,6 +642,8 @@ function improve() {
 		improveFieldBox();
 		improveEquip();
 		improveMailbox();
+
+		informer.update('pvp', isArena());
 	} catch (x) {
 		GM_log(x);
 	} finally {

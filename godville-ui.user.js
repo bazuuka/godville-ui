@@ -575,7 +575,7 @@ function improveStats() {
 	// Save stats
 	// Парсер строки с золотом
 	var gold_parser = function(val) {
-		return parseInt(val.replace(/[^0-9]/g, ''));
+		return parseInt(val.replace(/[^0-9]/g, '')) || 0;
 	};
 
 	stats.setFromProgressBar('exp', $('#pr3'));

@@ -388,6 +388,66 @@ var updater = {
 };
 
 // ------------------------------------
+// Информаер для важной информации
+// * мигает заголовком
+// * показывает попапы
+// ------------------------------------
+var informer = {
+	flags: {},
+	init: function() {
+		this.tick();
+	},
+	// устанавливает или удаляет флаг
+	update: function(flag, value) {
+		if (value) {
+			if (!(flag in this.flags))
+				this.flags[flag] = true;
+		} else {
+			if (flag in this.flags)
+				delete this.flags[flag];
+		}
+		this.tick();
+	},
+	// убирает оповещение о событии
+	down: function(flag) {
+		this.flags[flag] = false;
+	},
+	tick: function() {
+		if (this.tref)
+			clearTimeout(this.tref);
+
+		// пройти по всем флагам и выбрать те, которые надо показывать
+		var to_show = [];
+		for (flag in this.flags) {
+			if (this.flags[flag])
+				to_show.push(flag);
+		}
+		to_show.sort();
+
+		// если есть чё, показать или вернуть стандартный заголовок
+		if (to_show.length > 0) {
+			this.update_title(to_show);
+			this.tref = setTimeout( function(){informer.tick.call(informer);}, 700);
+		} else {
+			this.clear_title();
+			this.tref = undefined;
+		}
+	},
+	clear_title: function() {
+		document.title = 'gv: ' + god_name;
+	},
+	update_title: function(arr) {
+		this.odd_tick = ! this.odd_tick;
+
+		var msg = arr.join('! ');
+		msg = (this.odd_tick? '--- ' : '*** ') + msg;
+		document.title = msg;
+	}
+};
+
+
+
+// ------------------------------------
 //  Improvements !!
 // ------------------------------------
 
@@ -590,6 +650,7 @@ $(function() {
 	  timeout_bar.create();
 	  menu_bar.create();
 	  updater.check();
+	  informer.init();
 
 	  improve();
 

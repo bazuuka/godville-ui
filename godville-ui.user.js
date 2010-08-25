@@ -211,7 +211,6 @@ var words = {
 	},
 	longPhrase: function(sect, len) {
 		phrases = this._longPhrase_recursion(this.base['phrases'][sect].slice(), len || 78);
-		console.log(phrases);
 		return phrases.join(' ');
 	},
 	inspectPhrase: function(item_name) {
@@ -233,7 +232,6 @@ var words = {
 			var remainder = len - next.length - 2; // 2 for ', '
 			if ( remainder > 0) {
 				var res = [next].concat(this._longPhrase_recursion(source, remainder));
-				console.log(res);
 				return res;
 			}
 		}

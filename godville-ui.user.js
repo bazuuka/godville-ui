@@ -10,7 +10,7 @@
 // @license        GNU General Public License v3
 // ==/UserScript==
 
-var version = 1;
+var version = 2;
 var script_link = 'http://userscripts.org/scripts/show/81101';
 var latest_version_link = 'http://github.com/bazuuka/godville-ui/raw/master/version';
 var source_link_template = 'http://github.com/bazuuka/godville-ui/raw/%tag%/godville-ui.user.js';
@@ -218,8 +218,8 @@ var words = {
 	},
 
 	// Checkers
-	isHealItem: function(item_name) {
-		return this.base['items']['heal'].indexOf(item_name) >= 0;
+	isCategoryItem: function(cat, item_name) {
+		return this.base['items'][cat].indexOf(item_name) >= 0;
 	},
 	canBeActivated: function($obj) {
 		return $obj.text().match(/\(\@\)/);
@@ -499,19 +499,46 @@ function improveLoot() {
 			});
 	}
 
+	var good_box = false;
+	var black_box = false;
+	var transformer = false;
+	var bold_item = false;
+
 	// Parse items
 	$('#hero_loot ul li').each(function(ind, obj) {
 		var $obj = $(obj);
-		var item_name = $('span', $obj).text().replace(/^\s+|\s+$/g, '');
+		var item_name = $('span', $obj).text()
+									   .replace(/\(\@\)/, '')
+									   .replace(/^\s+|\s+$/g, '');
+		console.log("---" + item_name + "---");
 		// color items, and add buttons
-		if (words.isHealItem(item_name)) {
+		if (words.isCategoryItem('heal', item_name)) {
 			$obj.css('color', 'green');
+		} else if (words.isCategoryItem('black box', item_name)) {
+			black_box = true;
+		} else if (words.isCategoryItem('good box', item_name)) {
+			good_box = true;
+		} else if (words.isCategoryItem('transformer', item_name)) {
+			transformer = true;
 		} else if (words.canBeActivated($obj)) {
-			// Ничего не делать на активируемые вещи
+			// Ничего не делать -- остальные активируемые вещи
 		} else {
 			$obj.append(createInspectButton(item_name));
+
+			if($('b', $obj).length > 0) {
+				bold_item = true;
+			}
 		}
 	});
+
+	informer.update('black box', black_box);
+	informer.update('good box', good_box);
+	if (bold_item) {
+		informer.update('transform!', transformer);
+		informer.update('transformer', false);
+	} else {
+		informer.update('transformer', transformer);
+	}
 }
 
 

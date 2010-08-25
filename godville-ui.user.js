@@ -520,6 +520,7 @@ function improveLoot() {
 		var $obj = $(obj);
 		var item_name = $('span', $obj).text()
 									   .replace(/\(\@\)/, '')
+								       .replace(/\(\d+ шт\)/, '')
 									   .replace(/^\s+|\s+$/g, '');
 		// color items, and add buttons
 		if (words.isCategoryItem('heal', item_name)) {

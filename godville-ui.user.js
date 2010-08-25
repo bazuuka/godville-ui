@@ -421,6 +421,7 @@ var informer = {
 		} else {
 			if (flag in this.flags) {
 				delete this.flags[flag];
+				this.delete_label(flag);
 				this.save();
 			}
 		}
@@ -430,6 +431,7 @@ var informer = {
 	// убирает оповещение о событии
 	hide: function(flag) {
 		this.flags[flag] = false;
+		this.delete_label(flag);
 		this.save();
 	},
 	// PRIVATE
@@ -443,10 +445,18 @@ var informer = {
 		var $label = $('<div>' + flag + '</div>')
 			.click(function() {
 					   informer.hide(flag);
-					   $(this).remove();
 					   return false;
 				   });
 		this.container.append($label);
+	},
+	delete_label: function(flag) {
+		$('div', this.container)
+			.each(function() {
+					  var $this = $(this);
+					  if($this.text() == flag) {
+						  $this.remove();
+					  }
+				  });
 	},
 	tick: function() {
 		// пройти по всем флагам и выбрать те, которые надо показывать
@@ -489,6 +499,7 @@ var informer = {
 
 // Main button creater
 function improveLoot() {
+	if (isArena()) return;
 	if (isAlreadyImproved($('#inv_box'))) return;
 
 	function createInspectButton(item_name) {
@@ -510,7 +521,6 @@ function improveLoot() {
 		var item_name = $('span', $obj).text()
 									   .replace(/\(\@\)/, '')
 									   .replace(/^\s+|\s+$/g, '');
-		console.log("---" + item_name + "---");
 		// color items, and add buttons
 		if (words.isCategoryItem('heal', item_name)) {
 			$obj.css('color', 'green');
@@ -545,7 +555,7 @@ function improveLoot() {
 // -------------- Phrases ---------------------------
 
 function isArena() {
-	return $('#last_items_arena').length > 0;
+	return $('#arena_block').length > 0;
 }
 
 function appendCheckbox($div, id, label) {
@@ -611,6 +621,7 @@ function improveSayDialog() {
 
 // ----------- Вести с полей ----------------
 function improveFieldBox() {
+	if (isArena()) return;
 	if (isAlreadyImproved( $('#hero_details fieldset') )) return;
 
 	// Add links
@@ -622,6 +633,7 @@ function improveFieldBox() {
 // ---------- Stats --------------
 
 function improveStats() {
+	if (isArena()) return;
 	if (isAlreadyImproved( $('#hs_box') )) return;
 
 	// Add links
@@ -658,6 +670,7 @@ function improveStats() {
 // ---------- Equipment --------------
 
 function improveEquip() {
+	if (isArena()) return;
 	if (isAlreadyImproved( $('#equipment_box') )) return;
 
 	// Save stats
@@ -675,6 +688,7 @@ function improveEquip() {
 // -------------- Переписка ---------------------------
 
 function improveMailbox() {
+	if (isArena()) return;
 	if (isAlreadyImproved( $('#recent_friends') )) return;
 
 	// Ссылки на информацию о боге по средней кнопке мыши

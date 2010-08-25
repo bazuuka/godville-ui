@@ -377,7 +377,7 @@ var updater = {
 		}
 	},
 	check: function() {
-		var timer_key = 'update_timer';
+  		var timer_key = 'update_timer';
 		var date = new Date;
 		var secs = date.getTime();
 		var diff = storage.diff(timer_key, secs);
@@ -398,6 +398,7 @@ var updater = {
 var informer = {
 	flags: {},
 	init: function() {
+		this.load();
 		this.tick();
 	},
 	// устанавливает или удаляет флаг
@@ -409,6 +410,7 @@ var informer = {
 			if (flag in this.flags)
 				delete this.flags[flag];
 		}
+		this.save();
 		if (!this.tref)
 			this.tick();
 	},
@@ -417,6 +419,12 @@ var informer = {
 		this.flags[flag] = false;
 	},
 	// PRIVATE
+	load: function() {
+		this.flags = JSON.parse(storage.get('informer_flags') || '{}');
+	},
+	save: function() {
+		storage.set('informer_flags', JSON.stringify(this.flags));
+	},
 	tick: function() {
 		// пройти по всем флагам и выбрать те, которые надо показывать
 		var to_show = [];

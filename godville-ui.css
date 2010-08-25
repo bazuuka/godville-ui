@@ -66,3 +66,20 @@
 #reformal {
 	color: magenta;
 }
+
+#informer_bar {
+	display: block;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+}
+
+#informer_bar div {
+	float: right;
+	margin: 0.2em 1em;
+	padding: 0.1em 0.5em;
+	background: Beige;
+	border: 1px solid orange;
+	cursor: pointer;
+}

@@ -398,25 +398,41 @@ var updater = {
 var informer = {
 	flags: {},
 	init: function() {
+		// container
+		this.container = $('<div id="informer_bar"></div>');
+		$('#page_wrapper').prepend(this.container);
+
+		// load and draw labels
 		this.load();
+		for (flag in this.flags) {
+			if (this.flags[flag])
+				this.create_label(flag);
+		}
+
+		// run flicker
 		this.tick();
 	},
 	// устанавливает или удаляет флаг
 	update: function(flag, value) {
 		if (value) {
-			if (!(flag in this.flags))
+			if (!(flag in this.flags)) {
 				this.flags[flag] = true;
+				this.create_label(flag);
+				this.save();
+			}
 		} else {
-			if (flag in this.flags)
+			if (flag in this.flags) {
 				delete this.flags[flag];
+				this.save();
+			}
 		}
-		this.save();
 		if (!this.tref)
 			this.tick();
 	},
 	// убирает оповещение о событии
-	down: function(flag) {
+	hide: function(flag) {
 		this.flags[flag] = false;
+		this.save();
 	},
 	// PRIVATE
 	load: function() {
@@ -424,6 +440,15 @@ var informer = {
 	},
 	save: function() {
 		storage.set('informer_flags', JSON.stringify(this.flags));
+	},
+	create_label: function(flag) {
+		var $label = $('<div>' + flag + '</div>')
+			.click(function() {
+					   informer.hide(flag);
+					   $(this).remove();
+					   return false;
+				   });
+		this.container.append($label);
 	},
 	tick: function() {
 		// пройти по всем флагам и выбрать те, которые надо показывать
